@@ -7,20 +7,25 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
         }
         .sticky-header {
             position: sticky;
             top: 0;
-            background-color: white;
+            background-color: #f9f9f9; /* Light background color */
             z-index: 1000;
             padding: 10px;
             border-bottom: 1px solid #ddd;
         }
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.8em;
+        }
         .navbar {
             background-color: #333;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-top: 10px;
         }
         .navbar a {
             float: left;
@@ -31,16 +36,16 @@
             text-decoration: none;
             font-size: 17px;
         }
-        .navbar a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .active-tab {
+        .navbar a:hover, .navbar a.active-tab {
             background-color: #ddd;
             color: black;
         }
         .tab-content {
             display: none;
+            padding: 20px;
+        }
+        .tab-content.active-content {
+            display: block;
         }
         .city-container {
             border: 1px solid #ccc;
@@ -65,21 +70,26 @@
             width: 400px;
             height: 300px;
         }
+        #load-more {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="sticky-header">
         <h1>Smart City Mobility Solutions</h1>
         <div class="navbar">
-            <a href="#histograms" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
-            <a href="#comparison" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
-            <a href="#void1" class="tab-link">Void</a>
-            <a href="#void2" class="tab-link">Void</a>
-            <a href="#void3" class="tab-link">Void</a>
+            <a href="#" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
+            <a href="#" class="tab-link">Void</a>
+            <a href="#" class="tab-link">Void</a>
+            <a href="#" class="tab-link">Void</a>
         </div>
     </div>
 
-    <div id="histogram" class="tab-content" style="display: block;">
+    <div id="histogram" class="tab-content active-content">
         <div id="city-data-container"></div>
         <button id="load-more">Load More</button>
     </div>
@@ -93,15 +103,18 @@
 
     <script>
         function openTab(event, tabName) {
+            // Hide all tab contents
             const tabContents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].style.display = "none";
+            for (let content of tabContents) {
+                content.classList.remove("active-content");
             }
+            // Remove active class from all tab links
             const tabLinks = document.getElementsByClassName("tab-link");
-            for (let i = 0; i < tabLinks.length; i++) {
-                tabLinks[i].classList.remove("active-tab");
+            for (let link of tabLinks) {
+                link.classList.remove("active-tab");
             }
-            document.getElementById(tabName).style.display = "block";
+            // Show the selected tab content and make the link active
+            document.getElementById(tabName).classList.add("active-content");
             event.currentTarget.classList.add("active-tab");
         }
 
