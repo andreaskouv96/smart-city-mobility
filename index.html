@@ -150,11 +150,11 @@
                 type: 'bar',
                 data: {
                     labels: [
-                        'Car-sharing Apps',
-                        'Parking Apps',
-                        'Bicycle Hiring',
-                        'Online Scheduling',
-                        'Traffic Info Apps'
+                        'Car-sharing\nApps',
+                        'Parking Apps\nfor Spaces',
+                        'Bicycle\nHiring',
+                        'Online\nScheduling',
+                        'Traffic Info\nApps'
                     ],
                     datasets: [{
                         label: 'Impact (%)',
@@ -182,8 +182,11 @@
                     scales: {
                         x: {
                             ticks: {
-                                maxRotation: 0,
-                                minRotation: 0,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    size: 10
+                                }
                             }
                         },
                         y: {
