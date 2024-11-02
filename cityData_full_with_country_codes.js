@@ -1,6 +1,6 @@
 
 const cityData = [
-    {'city': 'Zurich', 'country': 'Switzerland', 'country_code': 'CH', 'created_at': '2024-10-14 09:18:55.607512+00', 
+    {'city': 'Zurich', 'country': 'Switzerland', 'country_code': 'CH', 'created_at':null, 
      'mobility_solutions': {'Car-sharing Apps have reduced congestion': 43.6, 
                             'Apps that direct you to an available parking space have reduced': 44.5, 
                             'Bicycle hiring has reduced congestion': 55.6, 
