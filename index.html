@@ -50,11 +50,25 @@
                 const cityDiv = document.createElement('div');
                 cityDiv.className = 'city-container';
 
+                // Create a title element with the flag and city name
                 const cityTitle = document.createElement('div');
                 cityTitle.className = 'city-title';
-                cityTitle.textContent = `${city.city}, ${city.country}`;
+
+                // Add flag image if the country code is available
+                if (city.country_code) {
+                    const flagImg = document.createElement('img');
+                    flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
+                    flagImg.alt = `${city.country} flag`;
+                    flagImg.style.width = '20px';  // Adjust size as needed
+                    flagImg.style.marginRight = '8px';
+                    cityTitle.appendChild(flagImg);
+                }
+
+                // Append the city name and country
+                cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
                 cityDiv.appendChild(cityTitle);
 
+                // Add other city data
                 const createdAt = document.createElement('div');
                 createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
                 cityDiv.appendChild(createdAt);
