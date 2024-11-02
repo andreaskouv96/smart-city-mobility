@@ -43,8 +43,8 @@
             margin-bottom: 10px;
         }
         .mini-chart {
-            width: 100px;
-            height: 100px;
+            width: 50px;  /* Set mini chart width */
+            height: 50px; /* Set mini chart height */
         }
     </style>
 </head>
@@ -84,7 +84,6 @@
                 const cityTitle = document.createElement('div');
                 cityTitle.className = 'city-title';
 
-                // Add flag image if the country code is available
                 if (city.country_code) {
                     const flagImg = document.createElement('img');
                     flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
@@ -172,9 +171,15 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: { enabled: false }
+                    },
+                    elements: {
+                        arc: {
+                            borderWidth: 0.5
+                        }
                     }
                 }
             });
