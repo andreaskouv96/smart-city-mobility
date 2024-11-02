@@ -63,11 +63,11 @@
     </style>
 </head>
 <body>
-    <!-- Navbar and rest of the HTML -->
     <h1>Smart City Mobility Solutions</h1>
 
+    <!-- Navbar with link to main city data view -->
     <div class="navbar">
-        <a href="#histograms">Istogrammi</a>
+        <a href="#" onclick="scrollToTop()">Istogrammi</a>
         <a href="#comparison">Comparison</a>
         <a href="#void1">Void</a>
         <a href="#void2">Void</a>
@@ -216,6 +216,10 @@
                     }
                 }
             });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         document.getElementById('load-more').addEventListener('click', displayCityData);
