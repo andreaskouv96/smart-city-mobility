@@ -49,21 +49,6 @@
             font-size: 1em;
             cursor: pointer;
         }
-        #chart-container {
-            width: 60%;
-            margin: auto;
-            margin-top: 20px;
-            text-align: center;
-        }
-        #chart-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .mini-chart {
-            width: 30px;
-            height: 30px;
-        }
     </style>
 </head>
 <body>
@@ -79,15 +64,6 @@
     <h1>Smart City Mobility Solutions</h1>
     <div id="city-data-container"></div>
     <button id="load-more">Load More</button>
-
-    <!-- Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Main chart area -->
-    <div id="chart-container">
-        <div id="chart-title">Mobility Solutions for City</div>
-        <canvas id="mobilityChart"></canvas>
-    </div>
 
     <!-- Load the cityData array from an external file -->
     <script src="cityData_full_with_country_codes.js"></script>
@@ -154,97 +130,14 @@
                 // Append city info to city container
                 cityDiv.appendChild(cityInfoDiv);
 
-                // Create a canvas for the mini chart
-                const miniChartCanvas = document.createElement('canvas');
-                miniChartCanvas.className = 'mini-chart';
-                miniChartCanvas.id = `miniChart-${i}`;
-                cityDiv.appendChild(miniChartCanvas);
-
                 // Append the city container to the main container
                 container.appendChild(cityDiv);
-
-                // Create a mini pie chart for each city
-                createMiniChart(miniChartCanvas.id, city.mobility_solutions);
-                
-                // Generate the main chart for the first displayed city
-                if (i === displayedCities) {
-                    createMainChart(city.mobility_solutions, city.city);
-                }
             }
 
             displayedCities += citiesPerPage;
             if (displayedCities >= cityData.length) {
                 document.getElementById('load-more').style.display = 'none';
             }
-        }
-
-        function createMiniChart(canvasId, mobilitySolutions) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(mobilitySolutions),
-                    datasets: [{
-                        data: Object.values(mobilitySolutions),
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: false }
-                    },
-                    elements: {
-                        arc: {
-                            borderWidth: 0.5
-                        }
-                    }
-                }
-            });
-        }
-
-        function createMainChart(mobilitySolutions, cityName) {
-            const ctx = document.getElementById('mobilityChart').getContext('2d');
-            document.getElementById('chart-title').textContent = `Mobility Solutions Impact for ${cityName}`;
-
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(mobilitySolutions),
-                    datasets: [{
-                        data: Object.values(mobilitySolutions),
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Mobility Solutions Impact on Congestion'
-                        }
-                    }
-                }
-            });
         }
 
         document.getElementById('load-more').addEventListener('click', displayCityData);
@@ -254,4 +147,3 @@
     </script>
 </body>
 </html>
-
