@@ -4,29 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart City Mobility Solutions</title>
-
-
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
         }
         .sticky-header {
             position: sticky;
             top: 0;
-            background-color: #1a1a1a; /* Dark background similar to company theme */
-            color: #f2f2f2;
+            background-color: #f9f9f9; /* Light background color */
             z-index: 1000;
-            padding: 10px 20px;
-            border-bottom: 2px solid #00b0ff; /* Light blue border */
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
         }
         h1 {
             margin: 0;
-            color: #00b0ff; /* Light blue color */
+            padding: 0;
+            font-size: 1.8em;
         }
         .navbar {
-            background-color: #1a1a1a;
+            background-color: #333;
             overflow: hidden;
             margin-top: 10px;
         }
@@ -39,20 +36,16 @@
             text-decoration: none;
             font-size: 17px;
         }
-        .navbar a:hover {
+        .navbar a:hover, .navbar a.active-tab {
             background-color: #ddd;
-            color: #1a1a1a;
-        }
-        .active-tab {
-            background-color: #00b0ff; /* Light blue active tab */
-            color: white;
+            color: black;
         }
         .tab-content {
             display: none;
             padding: 20px;
         }
-        #histogram {
-            display: block; /* Default to showing histogram content */
+        .tab-content.active-content {
+            display: block;
         }
         .city-container {
             border: 1px solid #ccc;
@@ -60,7 +53,6 @@
             margin-bottom: 20px;
             display: flex;
             align-items: flex-start;
-            background-color: #f9f9f9; /* Light gray background for city containers */
         }
         .city-info {
             flex: 1;
@@ -70,7 +62,6 @@
         .city-title {
             font-size: 1.5em;
             margin-bottom: 15px;
-            color: #1a1a1a;
         }
         .city-info div {
             margin-bottom: 12px;
@@ -79,21 +70,26 @@
             width: 400px;
             height: 300px;
         }
+        #load-more {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="sticky-header">
         <h1>Smart City Mobility Solutions</h1>
         <div class="navbar">
-            <a href="javascript:void(0)" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
-            <a href="javascript:void(0)" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
-            <a href="javascript:void(0)" class="tab-link">Void</a>
-            <a href="javascript:void(0)" class="tab-link">Void</a>
-            <a href="javascript:void(0)" class="tab-link">Void</a>
+            <a href="#" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
+            <a href="#" class="tab-link">Void</a>
+            <a href="#" class="tab-link">Void</a>
+            <a href="#" class="tab-link">Void</a>
         </div>
     </div>
 
-    <div id="histogram" class="tab-content">
+    <div id="histogram" class="tab-content active-content">
         <div id="city-data-container"></div>
         <button id="load-more">Load More</button>
     </div>
@@ -107,15 +103,18 @@
 
     <script>
         function openTab(event, tabName) {
+            // Hide all tab contents
             const tabContents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].style.display = "none";
+            for (let content of tabContents) {
+                content.classList.remove("active-content");
             }
+            // Remove active class from all tab links
             const tabLinks = document.getElementsByClassName("tab-link");
-            for (let i = 0; i < tabLinks.length; i++) {
-                tabLinks[i].classList.remove("active-tab");
+            for (let link of tabLinks) {
+                link.classList.remove("active-tab");
             }
-            document.getElementById(tabName).style.display = "block";
+            // Show the selected tab content and make the link active
+            document.getElementById(tabName).classList.add("active-content");
             event.currentTarget.classList.add("active-tab");
         }
 
@@ -139,18 +138,18 @@
 
                 if (city.country_code) {
                     const flagImg = document.createElement('img');
-                    flagImg.src = https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png;
-                    flagImg.alt = ${city.country} flag;
+                    flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
+                    flagImg.alt = `${city.country} flag`;
                     flagImg.style.width = '20px';
                     flagImg.style.marginRight = '8px';
                     cityTitle.appendChild(flagImg);
                 }
 
-                cityTitle.appendChild(document.createTextNode(${city.city}, ${city.country}));
+                cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
                 cityInfoDiv.appendChild(cityTitle);
 
                 const createdAt = document.createElement('div');
-                createdAt.textContent = Data Created At: ${city.created_at || 'N/A'};
+                createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
                 cityInfoDiv.appendChild(createdAt);
 
                 const mobilitySolutionsTitle = document.createElement('div');
@@ -160,21 +159,21 @@
                 const mobilitySolutions = document.createElement('ul');
                 for (const [solution, value] of Object.entries(city.mobility_solutions)) {
                     const solutionItem = document.createElement('li');
-                    solutionItem.textContent = ${solution}: ${value}%;
+                    solutionItem.textContent = `${solution}: ${value}%`;
                     mobilitySolutions.appendChild(solutionItem);
                 }
                 cityInfoDiv.appendChild(mobilitySolutions);
 
                 const trafficCongestion = document.createElement('div');
-                trafficCongestion.textContent = Traffic Congestion Not a Problem: ${city.traffic_congestion_not_a_problem}%;
+                trafficCongestion.textContent = `Traffic Congestion Not a Problem: ${city.traffic_congestion_not_a_problem}%`;
                 cityInfoDiv.appendChild(trafficCongestion);
 
                 const publicTransport = document.createElement('div');
-                publicTransport.textContent = Public Transport Satisfactory: ${city.public_transport_satisfactory}%;
+                publicTransport.textContent = `Public Transport Satisfactory: ${city.public_transport_satisfactory}%`;
                 cityInfoDiv.appendChild(publicTransport);
 
                 const smartCityRanking = document.createElement('div');
-                smartCityRanking.textContent = Smart City Ranking: ${city.smart_city_ranking};
+                smartCityRanking.textContent = `Smart City Ranking: ${city.smart_city_ranking}`;
                 cityInfoDiv.appendChild(smartCityRanking);
 
                 cityDiv.appendChild(cityInfoDiv);
@@ -182,7 +181,7 @@
                 const chartContainer = document.createElement('div');
                 chartContainer.className = 'chart-container';
                 const chartCanvas = document.createElement('canvas');
-                chartCanvas.id = chart-${i};
+                chartCanvas.id = `chart-${i}`;
                 chartContainer.appendChild(chartCanvas);
                 cityDiv.appendChild(chartContainer);
 
@@ -254,7 +253,7 @@
                     }
                 }
             });
-       }
+        }
 
         document.getElementById('load-more').addEventListener('click', displayCityData);
 
