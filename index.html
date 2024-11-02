@@ -43,8 +43,8 @@
             margin-bottom: 10px;
         }
         .chart-container {
-            width: 200px; /* Increase width */
-            height: 150px;
+            width: 400px; /* Set width to occupy available space */
+            height: 250px; /* Adjust height for larger chart display */
         }
     </style>
 </head>
@@ -132,7 +132,7 @@
                 // Append city info to city container
                 cityDiv.appendChild(cityInfoDiv);
 
-                // Create a canvas for the histogram
+                // Create a canvas for the histogram with larger dimensions
                 const chartContainer = document.createElement('div');
                 chartContainer.className = 'chart-container';
                 const chartCanvas = document.createElement('canvas');
