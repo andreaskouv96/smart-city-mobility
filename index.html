@@ -12,29 +12,31 @@
         .sticky-header {
             position: sticky;
             top: 0;
-            background-color: #1a1a1a; /* Dark background similar to company theme */
+            background-color: #1a1a1a;
             color: #f2f2f2;
             z-index: 1000;
             padding: 10px 20px;
-            border-bottom: 2px solid #00b0ff; /* Light blue border */
+            border-bottom: 2px solid #00b0ff;
+        }
+        .header-title {
             display: flex;
             align-items: center;
-            gap: 10px; /* Space between logo and title */
-          }
+            gap: 10px;
+        }
         .logo {
-            width: 50px; /* Adjust size as needed */
+            width: 50px;
             height: auto;
         }
         h1 {
             margin: 0;
-            padding: 0;
             font-size: 1.8em;
-            color: #00b0ff; /* Light blue color */
+            color: #00b0ff;
         }
         .navbar {
-            background-color: #1a1a1a; /* Dark background */
+            background-color: #1a1a1a;
             overflow: hidden;
             margin-top: 10px;
+            display: block; /* Ensures navbar appears below the title */
         }
         .navbar a {
             float: left;
@@ -46,7 +48,7 @@
             font-size: 17px;
         }
         .navbar a:hover, .navbar a.active-tab {
-            background-color: #00b0ff; /* Light blue on hover and active */
+            background-color: #00b0ff;
             color: white;
         }
         .tab-content {
@@ -62,7 +64,7 @@
             margin-bottom: 20px;
             display: flex;
             align-items: flex-start;
-            background-color: #f9f9f9; /* Light gray background for city containers */
+            background-color: #f9f9f9;
         }
         .city-info {
             flex: 1;
@@ -85,28 +87,30 @@
             padding: 10px 20px;
             font-size: 1em;
             cursor: pointer;
-            background-color: #00b0ff; /* Light blue button */
+            background-color: #00b0ff;
             color: white;
             border: none;
             margin-top: 20px;
         }
         #load-more:hover {
-            background-color: #007bbf; /* Darker blue on hover */
+            background-color: #007bbf;
         }
     </style>
 </head>
 <body>
-   <div class="sticky-header">
-    <img src="logo.png" alt="Company Logo" class="logo">
-    <h1>Smart City Mobility Solutions</h1>
-    <div class="navbar">
-        <a href="#" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
-        <a href="#" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
-        <a href="#" class="tab-link">Void</a>
-        <a href="#" class="tab-link">Void</a>
-        <a href="#" class="tab-link">Void</a>
+    <div class="sticky-header">
+        <div class="header-title">
+            <img src="logo.png" alt="Company Logo" class="logo">
+            <h1>Smart City Mobility Solutions</h1>
+        </div>
+        <div class="navbar">
+            <a href="#" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
+            <a href="#" class="tab-link">Void</a>
+            <a href="#" class="tab-link">Void</a>
+            <a href="#" class="tab-link">Void</a>
+        </div>
     </div>
-</div>
 
     <div id="histogram" class="tab-content active-content">
         <div id="city-data-container"></div>
@@ -250,11 +254,12 @@
                     scales: {
                         x: {
                             ticks: {
-							                                maxRotation: 90,
+                                maxRotation: 90,
                                 minRotation: 90,
                                 font: {
                                     size: 10
                                 }
+                           
                             }
                         },
                         y: {
