@@ -43,15 +43,14 @@
             margin-bottom: 10px;
         }
         .chart-container {
-            width: 400px; /* Set width to occupy available space */
-            height: 250px; /* Adjust height for larger chart display */
+            width: 400px;
+            height: 250px;
         }
     </style>
 </head>
 <body>
     <h1>Smart City Mobility Solutions</h1>
 
-    <!-- Navbar placed below the title -->
     <div class="navbar">
         <a href="#histograms">Istogrammi</a>
         <a href="#comparison">Comparison</a>
@@ -63,10 +62,7 @@
     <div id="city-data-container"></div>
     <button id="load-more">Load More</button>
 
-    <!-- Load Chart.js for histograms -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Load the cityData array from an external file -->
     <script src="cityData_full_with_country_codes.js"></script>
 
     <script>
@@ -82,7 +78,6 @@
                 const cityDiv = document.createElement('div');
                 cityDiv.className = 'city-container';
 
-                // City info div
                 const cityInfoDiv = document.createElement('div');
                 cityInfoDiv.className = 'city-info';
 
@@ -129,10 +124,8 @@
                 smartCityRanking.textContent = `Smart City Ranking: ${city.smart_city_ranking}`;
                 cityInfoDiv.appendChild(smartCityRanking);
 
-                // Append city info to city container
                 cityDiv.appendChild(cityInfoDiv);
 
-                // Create a canvas for the histogram with larger dimensions
                 const chartContainer = document.createElement('div');
                 chartContainer.className = 'chart-container';
                 const chartCanvas = document.createElement('canvas');
@@ -140,10 +133,8 @@
                 chartContainer.appendChild(chartCanvas);
                 cityDiv.appendChild(chartContainer);
 
-                // Append the city container to the main container
                 container.appendChild(cityDiv);
 
-                // Create the histogram for each city with abbreviated labels
                 createHistogram(chartCanvas.id, city.mobility_solutions);
             }
 
@@ -158,7 +149,13 @@
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(mobilitySolutions).map(label => label.split(' ')[0]), // Abbreviated labels
+                    labels: [
+                        'Car-sharing Apps',
+                        'Parking Apps',
+                        'Bicycle Hiring',
+                        'Online Scheduling',
+                        'Traffic Info Apps'
+                    ],
                     datasets: [{
                         label: 'Impact (%)',
                         data: Object.values(mobilitySolutions),
@@ -185,8 +182,8 @@
                     scales: {
                         x: {
                             ticks: {
-                                maxRotation: 45,  // Tilt labels at 45 degrees for readability
-                                autoSkip: false
+                                maxRotation: 0,
+                                minRotation: 0,
                             }
                         },
                         y: {
@@ -205,7 +202,6 @@
 
         document.getElementById('load-more').addEventListener('click', displayCityData);
 
-        // Load the initial set of cities
         displayCityData();
     </script>
 </body>
