@@ -9,13 +9,18 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+        .sticky-container {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 1000;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
         .navbar {
             background-color: #333;
             overflow: hidden;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            margin-bottom: 10px;
         }
         .navbar a {
             float: left;
@@ -73,23 +78,22 @@
     </style>
 </head>
 <body>
-    <h1>Smart City Mobility Solutions</h1>
-
-    <div class="navbar">
-        <a href="#histograms" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
-        <a href="#comparison" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
-        <a href="#void1" class="tab-link">Void</a>
-        <a href="#void2" class="tab-link">Void</a>
-        <a href="#void3" class="tab-link">Void</a>
+    <div class="sticky-container">
+        <h1>Smart City Mobility Solutions</h1>
+        <div class="navbar">
+            <a href="#histograms" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
+            <a href="#comparison" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
+            <a href="#void1" class="tab-link">Void</a>
+            <a href="#void2" class="tab-link">Void</a>
+            <a href="#void3" class="tab-link">Void</a>
+        </div>
     </div>
 
-    <!-- Histogram Tab Content -->
     <div id="histogram" class="tab-content" style="display: block;">
         <div id="city-data-container"></div>
         <button id="load-more">Load More</button>
     </div>
 
-    <!-- Comparison Tab Content -->
     <div id="comparison" class="tab-content">
         <p>This is the Comparison tab content. You can add specific comparison content here.</p>
     </div>
@@ -98,26 +102,19 @@
     <script src="cityData_full_with_country_codes.js"></script>
 
     <script>
-        // Tab functionality
         function openTab(event, tabName) {
-            // Hide all tab contents
             const tabContents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < tabContents.length; i++) {
                 tabContents[i].style.display = "none";
             }
-
-            // Remove active class from all tabs
             const tabLinks = document.getElementsByClassName("tab-link");
             for (let i = 0; i < tabLinks.length; i++) {
                 tabLinks[i].classList.remove("active-tab");
             }
-
-            // Show the selected tab content and set the active tab
             document.getElementById(tabName).style.display = "block";
             event.currentTarget.classList.add("active-tab");
         }
 
-        // City Data Display for Histogram Tab
         let displayedCities = 0;
         const citiesPerPage = 5;
 
@@ -260,4 +257,4 @@
         displayCityData();
     </script>
 </body>
-</
+</html>
