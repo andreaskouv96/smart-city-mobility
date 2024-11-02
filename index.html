@@ -9,12 +9,12 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        .sticky-container {
+        .sticky-header {
             position: sticky;
             top: 0;
             background-color: white;
             z-index: 1000;
-            padding-bottom: 10px;
+            padding: 10px;
             border-bottom: 1px solid #ddd;
         }
         .navbar {
@@ -61,16 +61,6 @@
         .city-info div {
             margin-bottom: 12px;
         }
-        .mobility-solution ul {
-            padding-left: 0;
-            list-style: none;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        .mobility-solution li {
-            margin-bottom: 8px;
-            text-align: left;
-        }
         .chart-container {
             width: 400px;
             height: 300px;
@@ -78,7 +68,7 @@
     </style>
 </head>
 <body>
-    <div class="sticky-container">
+    <div class="sticky-header">
         <h1>Smart City Mobility Solutions</h1>
         <div class="navbar">
             <a href="#histograms" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
