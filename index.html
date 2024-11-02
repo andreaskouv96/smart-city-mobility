@@ -15,8 +15,15 @@
             background-color: #1a1a1a; /* Dark background similar to company theme */
             color: #f2f2f2;
             z-index: 1000;
-            padding: 10px;
+            padding: 10px 20px;
             border-bottom: 2px solid #00b0ff; /* Light blue border */
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between logo and title */
+          }
+        .logo {
+            width: 50px; /* Adjust size as needed */
+            height: auto;
         }
         h1 {
             margin: 0;
@@ -89,16 +96,17 @@
     </style>
 </head>
 <body>
-    <div class="sticky-header">
-        <h1>Smart City Mobility Solutions</h1>
-        <div class="navbar">
-            <a href="javascript:void(0)" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
-            <a href="javascript:void(0)" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
-            <a href="javascript:void(0)" class="tab-link">Void</a>
-            <a href="javascript:void(0)" class="tab-link">Void</a>
-            <a href="javascript:void(0)" class="tab-link">Void</a>
-        </div>
+   <div class="sticky-header">
+    <img src="images/logo.png" alt="Company Logo" class="logo">
+    <h1>Smart City Mobility Solutions</h1>
+    <div class="navbar">
+        <a href="#" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
+        <a href="#" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
+        <a href="#" class="tab-link">Void</a>
+        <a href="#" class="tab-link">Void</a>
+        <a href="#" class="tab-link">Void</a>
     </div>
+</div>
 
     <div id="histogram" class="tab-content active-content">
         <div id="city-data-container"></div>
