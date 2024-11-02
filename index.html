@@ -43,7 +43,7 @@
             margin-bottom: 10px;
         }
         .chart-container {
-            width: 150px;
+            width: 200px; /* Increase width */
             height: 150px;
         }
     </style>
@@ -143,7 +143,7 @@
                 // Append the city container to the main container
                 container.appendChild(cityDiv);
 
-                // Create the histogram for each city
+                // Create the histogram for each city with abbreviated labels
                 createHistogram(chartCanvas.id, city.mobility_solutions);
             }
 
@@ -158,9 +158,9 @@
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(mobilitySolutions),
+                    labels: Object.keys(mobilitySolutions).map(label => label.split(' ')[0]), // Abbreviated labels
                     datasets: [{
-                        label: 'Impact on Congestion (%)',
+                        label: 'Impact (%)',
                         data: Object.values(mobilitySolutions),
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
@@ -185,8 +185,7 @@
                     scales: {
                         x: {
                             ticks: {
-                                maxRotation: 90,
-                                minRotation: 90,
+                                maxRotation: 45,  // Tilt labels at 45 degrees for readability
                                 autoSkip: false
                             }
                         },
