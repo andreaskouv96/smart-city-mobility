@@ -70,7 +70,7 @@ const cityData = [
                             'Bicycle hiring has reduced congestion': 42.1, 
                             'Online scheduling and ticket sales has made public transport easy': 55.3, 
                             'The city provides information on traffic congestion through mobile apps': 53.9}, 
-     'traffic_congestion_not_a_problem': 14.2, 'public_transport_satisfactory': 46.8, 'smart_city_ranking': 'BBB'}
+     'traffic_congestion_not_a_problem': 14.2, 'public_transport_satisfactory': 46.8, 'smart_city_ranking': 'BBB'},
      {'city': 'Melbourne', 'country': 'Australia', 'country_code': 'AU', 'created_at': null, 
      'mobility_solutions': {'Car-sharing Apps have reduced congestion': 38.4, 
                             'Apps that direct you to an available parking space have reduced': 39.5, 
