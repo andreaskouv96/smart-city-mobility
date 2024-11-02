@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,12 +26,25 @@
             font-size: 1em;
             cursor: pointer;
         }
+        #chart-container {
+            width: 60%;
+            margin: auto;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Smart City Mobility Solutions</h1>
     <div id="city-data-container"></div>
     <button id="load-more">Load More</button>
+
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Add a canvas for the chart -->
+    <div id="chart-container">
+        <canvas id="mobilityChart"></canvas>
+    </div>
 
     <!-- Load the cityData array from an external file -->
     <script src="cityData_full_with_country_codes.js"></script>
@@ -59,7 +71,7 @@
                     const flagImg = document.createElement('img');
                     flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
                     flagImg.alt = `${city.country} flag`;
-                    flagImg.style.width = '20px';  // Adjust size as needed
+                    flagImg.style.width = '20px';
                     flagImg.style.marginRight = '8px';
                     cityTitle.appendChild(flagImg);
                 }
@@ -98,12 +110,57 @@
                 cityDiv.appendChild(smartCityRanking);
 
                 container.appendChild(cityDiv);
+                
+                // Generate the chart for the first displayed city
+                if (i === displayedCities) {
+                    createMobilityChart(city.mobility_solutions);
+                }
             }
 
             displayedCities += citiesPerPage;
             if (displayedCities >= cityData.length) {
                 document.getElementById('load-more').style.display = 'none';
             }
+        }
+
+        function createMobilityChart(mobilitySolutions) {
+            const ctx = document.getElementById('mobilityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(mobilitySolutions),
+                    datasets: [{
+                        data: Object.values(mobilitySolutions),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Mobility Solutions Impact on Congestion'
+                        }
+                    }
+                }
+            });
         }
 
         document.getElementById('load-more').addEventListener('click', displayCityData);
