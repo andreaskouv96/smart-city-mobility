@@ -42,17 +42,9 @@
             font-size: 1.5em;
             margin-bottom: 10px;
         }
-        .mobility-solution {
-            margin-left: 20px;
-        }
-        #load-more {
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-        }
         .chart-container {
-            width: 300px;
-            height: 200px;
+            width: 150px;
+            height: 150px;
         }
     </style>
 </head>
@@ -97,7 +89,6 @@
                 const cityTitle = document.createElement('div');
                 cityTitle.className = 'city-title';
 
-                // Add flag image if available
                 if (city.country_code) {
                     const flagImg = document.createElement('img');
                     flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
@@ -110,7 +101,6 @@
                 cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
                 cityInfoDiv.appendChild(cityTitle);
 
-                // City details
                 const createdAt = document.createElement('div');
                 createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
                 cityInfoDiv.appendChild(createdAt);
@@ -193,6 +183,13 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 90,
+                                minRotation: 90,
+                                autoSkip: false
+                            }
+                        },
                         y: {
                             beginAtZero: true,
                             max: 100
