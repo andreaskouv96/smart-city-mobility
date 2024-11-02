@@ -32,10 +32,11 @@
             padding: 10px;
             margin-bottom: 20px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
         }
         .city-info {
             flex: 1;
+            padding-right: 20px;
         }
         .city-title {
             font-size: 1.5em;
@@ -48,6 +49,10 @@
             padding: 10px 20px;
             font-size: 1em;
             cursor: pointer;
+        }
+        .chart-container {
+            width: 300px;
+            height: 200px;
         }
     </style>
 </head>
@@ -66,11 +71,13 @@
     <div id="city-data-container"></div>
     <button id="load-more">Load More</button>
 
+    <!-- Load Chart.js for histograms -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Load the cityData array from an external file -->
     <script src="cityData_full_with_country_codes.js"></script>
 
     <script>
-        // Your JavaScript code goes here (no chart functions if you removed them)
         let displayedCities = 0;
         const citiesPerPage = 5;
 
@@ -83,12 +90,14 @@
                 const cityDiv = document.createElement('div');
                 cityDiv.className = 'city-container';
 
+                // City info div
                 const cityInfoDiv = document.createElement('div');
                 cityInfoDiv.className = 'city-info';
 
                 const cityTitle = document.createElement('div');
                 cityTitle.className = 'city-title';
 
+                // Add flag image if available
                 if (city.country_code) {
                     const flagImg = document.createElement('img');
                     flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
@@ -101,6 +110,7 @@
                 cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
                 cityInfoDiv.appendChild(cityTitle);
 
+                // City details
                 const createdAt = document.createElement('div');
                 createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
                 cityInfoDiv.appendChild(createdAt);
@@ -132,14 +142,69 @@
                 // Append city info to city container
                 cityDiv.appendChild(cityInfoDiv);
 
+                // Create a canvas for the histogram
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                const chartCanvas = document.createElement('canvas');
+                chartCanvas.id = `chart-${i}`;
+                chartContainer.appendChild(chartCanvas);
+                cityDiv.appendChild(chartContainer);
+
                 // Append the city container to the main container
                 container.appendChild(cityDiv);
+
+                // Create the histogram for each city
+                createHistogram(chartCanvas.id, city.mobility_solutions);
             }
 
             displayedCities += citiesPerPage;
             if (displayedCities >= cityData.length) {
                 document.getElementById('load-more').style.display = 'none';
             }
+        }
+
+        function createHistogram(canvasId, mobilitySolutions) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(mobilitySolutions),
+                    datasets: [{
+                        label: 'Impact on Congestion (%)',
+                        data: Object.values(mobilitySolutions),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
         }
 
         document.getElementById('load-more').addEventListener('click', displayCityData);
