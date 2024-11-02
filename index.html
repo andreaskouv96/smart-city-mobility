@@ -30,6 +30,12 @@
             width: 60%;
             margin: auto;
             margin-top: 20px;
+            text-align: center;
+        }
+        #chart-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -41,8 +47,9 @@
     <!-- Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Add a canvas for the chart -->
+    <!-- Add a canvas for the chart and a title for the chart city -->
     <div id="chart-container">
+        <div id="chart-title">Mobility Solutions for City</div>
         <canvas id="mobilityChart"></canvas>
     </div>
 
@@ -66,7 +73,6 @@
                 const cityTitle = document.createElement('div');
                 cityTitle.className = 'city-title';
 
-                // Add flag image if the country code is available
                 if (city.country_code) {
                     const flagImg = document.createElement('img');
                     flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
@@ -76,11 +82,9 @@
                     cityTitle.appendChild(flagImg);
                 }
 
-                // Append the city name and country
                 cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
                 cityDiv.appendChild(cityTitle);
 
-                // Add other city data
                 const createdAt = document.createElement('div');
                 createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
                 cityDiv.appendChild(createdAt);
@@ -110,10 +114,10 @@
                 cityDiv.appendChild(smartCityRanking);
 
                 container.appendChild(cityDiv);
-                
+
                 // Generate the chart for the first displayed city
                 if (i === displayedCities) {
-                    createMobilityChart(city.mobility_solutions);
+                    createMobilityChart(city.mobility_solutions, city.city);
                 }
             }
 
@@ -123,8 +127,12 @@
             }
         }
 
-        function createMobilityChart(mobilitySolutions) {
+        function createMobilityChart(mobilitySolutions, cityName) {
             const ctx = document.getElementById('mobilityChart').getContext('2d');
+            
+            // Update chart title with the city name
+            document.getElementById('chart-title').textContent = `Mobility Solutions Impact for ${cityName}`;
+
             new Chart(ctx, {
                 type: 'pie',
                 data: {
