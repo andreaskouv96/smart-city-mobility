@@ -116,119 +116,151 @@
 
     
 <div id="Cities-Comparison" class="tab-content">
-    <div class="container">
-        <h2>Comparison Between Cities - Mobility Solutions</h2>
-        <h3>Select Cities to Compare:</h3>
-        <select id="city-selection" multiple size="5" style="width: 100%; padding: 5px; margin-top: 10px;"></select>
-        <button onclick="updateCharts()">Update Charts</button>
-        
-        <!-- Grafici -->
-        <h3>Global Comparison of Mobility Solutions</h3>
-        <canvas id="radarChart" width="400" height="400"></canvas>
-        <h3>Congestion Reduction by Mobility Solution</h3>
-        <canvas id="barChart" width="600" height="400"></canvas>
+    <div class="comparison-container">
+        <h2>Select Cities for Comparison</h2>
+        <div id="city-checkboxes"></div>
+        <div class="buttons-container">
+            <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
+            <button id="reset-btn" class="action-btn">Reset Selection</button>
+        </div>
+        <div id="chart-container">
+            <canvas id="comparison-chart" width="400" height="400"></canvas>
+        </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="cityData_full_with_country_codes.js"></script>
 
+<style>
+    /* Basic styling for the UI components */
+    .comparison-container {
+        max-width: 600px;
+        margin: auto;
+        text-align: center;
+    }
+
+    .buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .action-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .action-btn:hover {
+        background-color: #45a049;
+    }
+
+    #chart-container {
+        margin-top: 20px;
+    }
+
+    label {
+        display: block;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+</style>
+
 <script>
-    let cityDataForComparison = [];
-    let radarChart, barChart;
-
-    // Funzione per caricare i dati dal file JSON
-    async function loadCityData() {
-        try {
-            const response = await fetch('cityData_full_with_country_codes.js'); // Assicurati di avere il percorso corretto
-            if (!response.ok) throw new Error("Errore nel caricamento dei dati");
-
-            cityDataForComparison = await response.json();
-            initializeCitySelection();
-        } catch (error) {
-            console.error("Errore nel caricamento dei dati JSON:", error);
+    function openTab(event, tabName) {
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (let content of tabContents) {
+            content.classList.remove("active-content");
         }
+        const tabLinks = document.getElementsByClassName("tab-link");
+        for (let link of tabLinks) {
+            link.classList.remove("active-tab");
+        }
+        document.getElementById(tabName).classList.add("active-content");
+        event.currentTarget.classList.add("active-tab");
     }
 
-    // Funzione per generare i checkbox per le città
-    function initializeCitySelection() {
-        const citySelection = document.getElementById("city-selection");
-        citySelection.innerHTML = ''; // Pulizia contenuto precedente
-
-        cityDataForComparison.forEach(city => {
-            const option = document.createElement("option");
-            option.value = city.city;
-            option.textContent = `${city.city}, ${city.country}`;
-            citySelection.appendChild(option);
+    function populateCityCheckboxes() {
+        const container = document.getElementById("city-checkboxes");
+        container.innerHTML = ""; // Clear existing checkboxes
+        cityData.forEach((city, index) => {
+            const label = document.createElement("label");
+            label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
+            container.appendChild(label);
         });
     }
 
-    // Funzione per ottenere le città selezionate
     function getSelectedCities() {
-        const selectedOptions = Array.from(document.querySelectorAll("#city-selection option:checked"));
-        const selectedCities = selectedOptions.map(option => option.value);
-        return cityDataForComparison.filter(city => selectedCities.includes(city.city));
+        const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
+        return Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
     }
 
-    // Funzione per aggiornare i grafici
-    function updateCharts() {
+    function displayComparisonChart(selectedCities) {
+        const labels = [
+            'Car-sharing Apps',
+            'Parking Apps',
+            'Bicycle Hiring',
+            'Online Scheduling',
+            'Traffic Info Apps'
+        ];
+
+        const datasets = selectedCities.map((city, index) => ({
+            label: `${city.city}, ${city.country}`,
+            data: Object.values(city.mobility_solutions),
+            fill: true,
+            backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
+            borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
+            borderWidth: 1
+        }));
+
+        const ctx = document.getElementById("comparison-chart").getContext("2d");
+        
+        if (window.comparisonChart) {
+            window.comparisonChart.destroy(); // Destroy existing chart instance
+        }
+
+        window.comparisonChart = new Chart(ctx, {
+            type: "radar",
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+
+    document.getElementById("compare-btn").addEventListener("click", () => {
         const selectedCities = getSelectedCities();
-        if (selectedCities.length === 0) return;
+        if (selectedCities.length > 0) {
+            displayComparisonChart(selectedCities);
+        } else {
+            alert("Please select at least one city to compare.");
+        }
+    });
 
-        const radarLabels = Object.keys(selectedCities[0].mobility_solutions);
+    document.getElementById("reset-btn").addEventListener("click", () => {
+        document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
+        if (window.comparisonChart) {
+            window.comparisonChart.destroy();
+        }
+    });
 
-        const radarData = {
-            labels: radarLabels,
-            datasets: selectedCities.map((city, index) => ({
-                label: city.city,
-                data: Object.values(city.mobility_solutions),
-                fill: true,
-                backgroundColor: `rgba(${index * 50}, ${100 + index * 30}, ${200 - index * 30}, 0.2)`,
-                borderColor: `rgba(${index * 50}, ${100 + index * 30}, ${200 - index * 30}, 1)`,
-                borderWidth: 1
-            }))
-        };
-
-        const barData = {
-            labels: selectedCities.map(city => city.city),
-            datasets: radarLabels.map((solution, index) => ({
-                label: solution,
-                data: selectedCities.map(city => city.mobility_solutions[solution]),
-                backgroundColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 0.5)`,
-                borderColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 1)`,
-                borderWidth: 1
-            }))
-        };
-
-        if (radarChart) radarChart.destroy();
-        if (barChart) barChart.destroy();
-
-        const radarCtx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(radarCtx, {
-            type: 'radar',
-            data: radarData,
-            options: {
-                responsive: true,
-                scales: { r: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: 'top' }}
-            }
-        });
-
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        barChart = new Chart(barCtx, {
-            type: 'bar',
-            data: barData,
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: 'top' }}
-            }
-        });
-    }
-
-    // Carica i dati all'avvio della pagina
-    window.onload = loadCityData;
-
+    window.onload = function() {
+        populateCityCheckboxes();
+    };
 </script>
     </div>
 
