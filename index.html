@@ -124,31 +124,27 @@
             <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
             <button id="reset-btn" class="action-btn">Reset Selection</button>
         </div>
-        
+
         <!-- Radar Chart -->
-        <h3>Comparison of Mobility Solutions</h3>
-        <p>Each axis represents a different mobility solution, showing the score for each selected city in areas such as car-sharing apps, bicycle hiring, and more.</p>
+        <h3>Breakdown of Mobility Solutions by City</h3>
         <div id="chart-container">
             <canvas id="comparison-chart" width="400" height="400"></canvas>
         </div>
 
-        <!-- Bar Chart for Individual Solution Comparison by City -->
-        <h3>Mobility Solution Scores by City</h3>
-        <p>This bar chart shows individual scores for each mobility solution by city, allowing direct comparison across cities for each solution type.</p>
+        <!-- Bar Chart for Average Comparison -->
+        <h3>Average Mobility Solution Scores by City</h3>
         <div id="bar-chart-container">
             <canvas id="bar-chart" width="400" height="400"></canvas>
         </div>
 
-        <!-- Line Chart for Solution Trends -->
-        <h3>Average Mobility Solution Trends</h3>
-        <p>This line chart shows the average scores for each mobility solution type across the selected cities, highlighting the strongest and weakest areas overall.</p>
+        <!-- Line Chart for Mobility Trends -->
+        <h3>Mobility Solution Trends Across Cities</h3>
         <div id="line-chart-container">
             <canvas id="line-chart" width="400" height="400"></canvas>
         </div>
 
-        <!-- Pie Chart for Solution Distribution in a Single City -->
+        <!-- Pie Chart for Solution Distribution -->
         <h3>Mobility Solution Distribution in Selected City</h3>
-        <p>This pie chart displays the proportion of each mobility solution's score within a single city, providing insights into the city's focus areas.</p>
         <div id="pie-chart-container">
             <canvas id="pie-chart" width="400" height="400"></canvas>
         </div>
@@ -158,12 +154,61 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="cityData_full_with_country_codes.js"></script>
 
-<script>
-    let comparisonChart = null;
-    let barChart = null;
-    let lineChart = null;
-    let pieChart = null;
+<style>
+    .comparison-container {
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+    }
 
+    .buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .action-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .action-btn:hover {
+        background-color: #45a049;
+    }
+
+    #chart-container {
+        margin-top: 20px;
+    }
+
+    /* Styling for the city selection */
+    .city-selection {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    .city-selection label {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .city-selection input[type="checkbox"] {
+        accent-color: #4CAF50;
+    }
+</style>
+
+<script>
     function populateCityCheckboxes() {
         const container = document.getElementById("city-checkboxes");
         container.innerHTML = "";
@@ -176,113 +221,89 @@
 
     function getSelectedCities() {
         const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
-        const selectedCities = Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
-        return selectedCities;
+        return Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
     }
 
     function displayCharts(selectedCities) {
+        // Labels for all charts
         const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
-        
-        // Radar chart data
-        const radarDatasets = selectedCities.map((city, index) => ({
+
+        // Radar Chart: Mobility solutions by city
+        const radarData = selectedCities.map((city, index) => ({
             label: `${city.city}, ${city.country}`,
             data: Object.values(city.mobility_solutions),
-            fill: true,
             backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
             borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
-            borderWidth: 1
         }));
 
-        // Bar chart data for individual solutions by city
-        const barChartData = {
-            labels: labels,
-            datasets: selectedCities.map((city, index) => ({
-                label: `${city.city}, ${city.country}`,
-                data: Object.values(city.mobility_solutions),
-                backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 150) % 255}, ${(index * 200) % 255}, 0.6)`,
-            }))
-        };
-
-        // Line chart data for average trends across solutions
-        const lineData = labels.map((solution, i) => {
-            const avgScore = selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution.toLowerCase().replace(" ", "_")], 0) / selectedCities.length;
-            return avgScore;
+        // Bar Chart: Average score per city
+        const avgData = selectedCities.map(city => {
+            const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length;
+            return { city: city.city, avg: avgScore };
         });
-        
-        const lineChartData = {
-            labels: labels,
+        const barData = {
+            labels: avgData.map(d => d.city),
             datasets: [{
-                label: "Average Score Across Cities",
-                data: lineData,
-                borderColor: "rgba(75, 192, 192, 1)",
-                backgroundColor: "rgba(75, 192, 192, 0.3)",
-                fill: true,
-                tension: 0.3
+                label: 'Average Mobility Score',
+                data: avgData.map(d => d.avg),
+                backgroundColor: avgData.map((_, i) => `rgba(${i * 30}, ${100 + i * 20}, ${150 + i * 10}, 0.7)`)
             }]
         };
 
-        // Pie chart data for a single city distribution
-        if (selectedCities.length === 1) {
-            const city = selectedCities[0];
-            const pieChartData = {
-                labels: labels,
-                datasets: [{
-                    data: Object.values(city.mobility_solutions),
-                    backgroundColor: labels.map(() => `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`)
-                }]
-            };
+        // Line Chart: Trends across cities
+        const lineData = labels.map((label, i) => ({
+            label,
+            data: selectedCities.map(city => city.mobility_solutions[label]),
+            fill: false,
+            borderColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 1)`,
+        }));
 
-            if (pieChart) pieChart.destroy();
-            const pieCtx = document.getElementById("pie-chart").getContext("2d");
-            pieChart = new Chart(pieCtx, {
-                type: "pie",
-                data: pieChartData,
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: "top" }}
-                }
-            });
-        }
+        // Pie Chart: Distribution in first selected city
+        const pieData = {
+            labels: labels,
+            datasets: [{
+                label: `Distribution in ${selectedCities[0].city}`,
+                data: Object.values(selectedCities[0].mobility_solutions),
+                backgroundColor: labels.map((_, i) => `rgba(${i * 50}, ${100 + i * 40}, ${150 - i * 20}, 0.5)`)
+            }]
+        };
 
-        // Destroy previous charts
-        if (comparisonChart) comparisonChart.destroy();
-        if (barChart) barChart.destroy();
-        if (lineChart) lineChart.destroy();
+        // Initialize Charts
+        if (window.comparisonChart) window.comparisonChart.destroy();
+        if (window.barChart) window.barChart.destroy();
+        if (window.lineChart) window.lineChart.destroy();
+        if (window.pieChart) window.pieChart.destroy();
 
-        // Radar chart
+        // Radar Chart
         const radarCtx = document.getElementById("comparison-chart").getContext("2d");
-        comparisonChart = new Chart(radarCtx, {
+        window.comparisonChart = new Chart(radarCtx, {
             type: "radar",
-            data: { labels: labels, datasets: radarDatasets },
-            options: {
-                responsive: true,
-                scales: { r: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: "top" }}
-            }
+            data: { labels, datasets: radarData },
+            options: { responsive: true }
         });
 
-        // Bar chart
+        // Bar Chart
         const barCtx = document.getElementById("bar-chart").getContext("2d");
-        barChart = new Chart(barCtx, {
+        window.barChart = new Chart(barCtx, {
             type: "bar",
-            data: barChartData,
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: "top" }}
-            }
+            data: barData,
+            options: { responsive: true }
         });
 
-        // Line chart
+        // Line Chart
         const lineCtx = document.getElementById("line-chart").getContext("2d");
-        lineChart = new Chart(lineCtx, {
+        window.lineChart = new Chart(lineCtx, {
             type: "line",
-            data: lineChartData,
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: "top" }}
-            }
+            data: { labels: selectedCities.map(city => city.city), datasets: lineData },
+            options: { responsive: true }
+        });
+
+        // Pie Chart
+        const pieCtx = document.getElementById("pie-chart").getContext("2d");
+        window.pieChart = new Chart(pieCtx, {
+            type: "pie",
+            data: pieData,
+            options: { responsive: true }
         });
     }
 
@@ -297,15 +318,13 @@
 
     document.getElementById("reset-btn").addEventListener("click", () => {
         document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
-        if (comparisonChart) comparisonChart.destroy();
-        if (barChart) barChart.destroy();
-        if (lineChart) lineChart.destroy();
-        if (pieChart) pieChart.destroy();
+        if (window.comparisonChart) window.comparisonChart.destroy();
+        if (window.barChart) window.barChart.destroy();
+        if (window.lineChart) window.lineChart.destroy();
+        if (window.pieChart) window.pieChart.destroy();
     });
 
-    window.onload = function() {
-        populateCityCheckboxes();
-    };
+    window.onload = populateCityCheckboxes;
 </script>
 
 
