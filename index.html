@@ -118,7 +118,7 @@
 <div id="Cities-Comparison" class="tab-content">
     <div class="comparison-container">
         <h2>Select Cities for Comparison</h2>
-         <div id="city-checkboxes" class="city-selection"></div>
+        <div id="city-checkboxes" class="city-selection"></div>
 
         <div class="buttons-container">
             <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
@@ -215,8 +215,12 @@
     }
 </style>
 
-
 <script>
+    // Variabili per i grafici inizializzate a null
+    let comparisonChart = null;
+    let barChart = null;
+    let doughnutChart = null;
+
     function populateCityCheckboxes() {
         const container = document.getElementById("city-checkboxes");
         container.innerHTML = "";
@@ -229,13 +233,15 @@
 
     function getSelectedCities() {
         const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
-        return Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
+        const selectedCities = Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
+        console.log("Selected Cities:", selectedCities);  // Debug
+        return selectedCities;
     }
 
     function displayComparisonChart(selectedCities) {
         const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
         
-        // Radar chart data
+        // Dati per il grafico radar
         const radarDatasets = selectedCities.map((city, index) => ({
             label: `${city.city}, ${city.country}`,
             data: Object.values(city.mobility_solutions),
@@ -245,14 +251,14 @@
             borderWidth: 1
         }));
 
-        // Bar chart data for average scores per city
+        // Dati per il grafico a barre (media dei punteggi)
         const avgData = selectedCities.map(city => ({
             label: city.city,
             data: [Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length],
             backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`,
         }));
 
-        // Doughnut chart data for solution distribution per city
+        // Dati per il grafico a ciambella (distribuzione delle soluzioni)
         const doughnutData = {
             labels: labels,
             datasets: selectedCities.map((city, index) => ({
@@ -262,14 +268,14 @@
             }))
         };
 
-        // Destroy previous charts if they exist
-        if (window.comparisonChart) window.comparisonChart.destroy();
-        if (window.barChart) window.barChart.destroy();
-        if (window.doughnutChart) window.doughnutChart.destroy();
+        // Distrugge i grafici precedenti
+        if (comparisonChart) comparisonChart.destroy();
+        if (barChart) barChart.destroy();
+        if (doughnutChart) doughnutChart.destroy();
 
-        // Radar chart
+        // Crea il grafico radar
         const radarCtx = document.getElementById("comparison-chart").getContext("2d");
-        window.comparisonChart = new Chart(radarCtx, {
+        comparisonChart = new Chart(radarCtx, {
             type: "radar",
             data: { labels: labels, datasets: radarDatasets },
             options: {
@@ -279,9 +285,9 @@
             }
         });
 
-        // Bar chart
+        // Crea il grafico a barre
         const barCtx = document.getElementById("bar-chart").getContext("2d");
-        window.barChart = new Chart(barCtx, {
+        barChart = new Chart(barCtx, {
             type: "bar",
             data: { labels: selectedCities.map(city => city.city), datasets: avgData },
             options: {
@@ -291,9 +297,9 @@
             }
         });
 
-        // Doughnut chart
+        // Crea il grafico a ciambella
         const doughnutCtx = document.getElementById("doughnut-chart").getContext("2d");
-        window.doughnutChart = new Chart(doughnutCtx, {
+        doughnutChart = new Chart(doughnutCtx, {
             type: "doughnut",
             data: doughnutData,
             options: {
@@ -314,15 +320,16 @@
 
     document.getElementById("reset-btn").addEventListener("click", () => {
         document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
-        if (window.comparisonChart) window.comparisonChart.destroy();
-        if (window.barChart) window.barChart.destroy();
-        if (window.doughnutChart) window.doughnutChart.destroy();
+        if (comparisonChart) comparisonChart.destroy();
+        if (barChart) barChart.destroy();
+        if (doughnutChart) doughnutChart.destroy();
     });
 
     window.onload = function() {
         populateCityCheckboxes();
     };
 </script>
+
 
     </div>
 
