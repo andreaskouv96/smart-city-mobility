@@ -141,7 +141,7 @@
     // Funzione per caricare i dati dal file JSON
     async function loadCityData() {
         try {
-            const response = await fetch('cityData_full_with_country_codes.json'); // Sostituisci con il percorso corretto
+            const response = await fetch('cityData_full_with_country_codes.js'); // Sostituisci con il percorso corretto
             if (!response.ok) throw new Error("Errore nel caricamento dei dati");
             
             cityDataForComparison = await response.json();
