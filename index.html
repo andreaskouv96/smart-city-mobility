@@ -118,25 +118,20 @@
     </div>
 
     
-    <div id="Cities Comparison" class="tab-content">
-        <div class="container">
-       <h2>Comparison Between Cities - Mobility Solutions</h2>
-       <h3>Select Cities to Compare:</h3>
-       <div id="city-selection">
-           <form id="city-form">
-               <!-- I checkbox saranno aggiunti dinamicamente -->
-           </form>
-           <button onclick="updateCharts()">Update Charts</button>
-                </div>
-
-            
-            <!-- Grafici -->
-            <h3>Global Comparison of Mobility Solutions</h3>
-            <canvas id="radarChart" width="400" height="400"></canvas>
-            <h3>Congestion Reduction by Mobility Solution</h3>
-            <canvas id="barChart" width="600" height="400"></canvas>
-        </div>          
+<div id="Cities Comparison" class="tab-content">
+    <div class="container">
+        <h2>Comparison Between Cities - Mobility Solutions</h2>
+        <h3>Select Cities to Compare:</h3>
+        <div id="city-selection"></div>
+        <button onclick="updateCharts()">Update Charts</button>
+        
+        <!-- Grafici -->
+        <h3>Global Comparison of Mobility Solutions</h3>
+        <canvas id="radarChart" width="400" height="400"></canvas>
+        <h3>Congestion Reduction by Mobility Solution</h3>
+        <canvas id="barChart" width="600" height="400"></canvas>
     </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
