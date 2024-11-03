@@ -106,9 +106,6 @@
         <div class="navbar">
             <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
             <a href="#" class="tab-link" onclick="openTab(event, 'Cities-Comparison')">Cities-Comparison</a>
-            <a href="#" class="tab-link">Void</a>
-            <a href="#" class="tab-link">Void</a>
-            <a href="#" class="tab-link">Void</a>
         </div>
     </div>
 
@@ -122,7 +119,7 @@
     <div class="container">
         <h2>Comparison Between Cities - Mobility Solutions</h2>
         <h3>Select Cities to Compare:</h3>
-        <select id="city-selection" multiple size="5" style="width: 100%; padding: 5px; margin-top: 10px;">
+        <select id="city-selection" multiple size="5" style="width: 100%; padding: 5px; margin-top: 10px;"></select>
         <button onclick="updateCharts()">Update Charts</button>
         
         <!-- Grafici -->
@@ -135,19 +132,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="cityData_full_with_country_codes.js"></script>
-    
-   <script>
+
+<script>
     let cityDataForComparison = [];
+    let radarChart, barChart;
 
     // Funzione per caricare i dati dal file JSON
     async function loadCityData() {
         try {
-            const response = await fetch('cityData_full_with_country_codes.js'); // Sostituisci con il percorso corretto
+            const response = await fetch('cityData_full_with_country_codes.js'); // Assicurati di avere il percorso corretto
             if (!response.ok) throw new Error("Errore nel caricamento dei dati");
-            
+
             cityDataForComparison = await response.json();
             initializeCitySelection();
-            updateCharts();
         } catch (error) {
             console.error("Errore nel caricamento dei dati JSON:", error);
         }
@@ -155,35 +152,22 @@
 
     // Funzione per generare i checkbox per le città
     function initializeCitySelection() {
-           const citySelection = document.getElementById("city-selection");
-    citySelection.innerHTML = ''; // Pulizia contenuto precedente
+        const citySelection = document.getElementById("city-selection");
+        citySelection.innerHTML = ''; // Pulizia contenuto precedente
 
-    cityDataForComparison.forEach(city => {
-        const label = document.createElement("label");
-        label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}<br>`;
-        citySelection.appendChild(label);
-    });
-        }
-
-    // Funzione per aprire i tab e visualizzare i dati
-    function openTab(event, tabName) {
-        const tabContents = document.getElementsByClassName("tab-content");
-        for (let content of tabContents) {
-            content.classList.remove("active-content");
-        }
-        const tabLinks = document.getElementsByClassName("tab-link");
-        for (let link of tabLinks) {
-            link.classList.remove("active-tab");
-        }
-        document.getElementById(tabName).classList.add("active-content");
-        event.currentTarget.classList.add("active-tab");
+        cityDataForComparison.forEach(city => {
+            const option = document.createElement("option");
+            option.value = city.city;
+            option.textContent = `${city.city}, ${city.country}`;
+            citySelection.appendChild(option);
+        });
     }
 
     // Funzione per ottenere le città selezionate
     function getSelectedCities() {
-            const selectedOptions = Array.from(document.querySelectorAll("#city-selection option:checked"));
-            const selectedCities = selectedOptions.map(option => option.value);
-            return cityDataForComparison.filter(city => selectedCities.includes(city.city));
+        const selectedOptions = Array.from(document.querySelectorAll("#city-selection option:checked"));
+        const selectedCities = selectedOptions.map(option => option.value);
+        return cityDataForComparison.filter(city => selectedCities.includes(city.city));
     }
 
     // Funzione per aggiornare i grafici
@@ -244,6 +228,7 @@
 
     // Carica i dati all'avvio della pagina
     window.onload = loadCityData;
+
 </script>
     </div>
 
