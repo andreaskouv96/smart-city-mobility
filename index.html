@@ -138,13 +138,13 @@
         </div>
 
         <!-- Line Chart for Mobility Trends -->
-        <h3>Mobility Solution Trends Across Cities</h3>
+       <h3>Mobility Solution Trends Across Cities</h3>
         <div id="line-chart-container">
             <canvas id="line-chart" width="400" height="400"></canvas>
         </div>
 
-        <!-- Pie Chart for Solution Distribution -->
-        <h3>Mobility Solution Distribution in Selected City</h3>
+        <!-- Pie Chart for Average Distribution of Solutions -->
+        <h3>Average Mobility Solution Distribution Across Selected Cities</h3>
         <div id="pie-chart-container">
             <canvas id="pie-chart" width="400" height="400"></canvas>
         </div>
@@ -251,19 +251,22 @@
         };
 
         // Line Chart: Trends across cities
-        const lineData = labels.map((label, i) => ({
-            label,
-            data: selectedCities.map(city => city.mobility_solutions[label]),
-            fill: false,
+          const lineData = labels.map((solution, i) => ({
+            label: solution,
+            data: selectedCities.map(city => city.mobility_solutions[solution]),
             borderColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 1)`,
+            fill: false
         }));
 
         // Pie Chart: Distribution in first selected city
+         const avgDistribution = labels.map(solution =>
+            selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution], 0) / selectedCities.length
+        );
         const pieData = {
             labels: labels,
             datasets: [{
-                label: `Distribution in ${selectedCities[0].city}`,
-                data: Object.values(selectedCities[0].mobility_solutions),
+                label: 'Average Distribution',
+                data: avgDistribution,
                 backgroundColor: labels.map((_, i) => `rgba(${i * 50}, ${100 + i * 40}, ${150 - i * 20}, 0.5)`)
             }]
         };
