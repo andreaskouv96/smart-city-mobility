@@ -206,6 +206,21 @@
     .city-selection input[type="checkbox"] {
         accent-color: #4CAF50;
     }
+       /* Responsive Design */
+    @media (max-width: 600px) {
+        .comparison-container {
+            padding: 10px;
+        }
+
+        .buttons-container {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .city-selection {
+            max-width: 100%;
+        }
+    }
 </style>
 
 <script>
@@ -232,37 +247,34 @@
         label: `${city.city}, ${city.country}`,
         data: Object.values(city.mobility_solutions),
         backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
-        borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`
+        borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
+        borderWidth: 1
     }));
-
-        // Bar Chart: Average score per city
-    const avgData = selectedCities.map(city => {
-        const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length;
-        return { city: city.city, avg: avgScore };
-    });
-    const barData = {
-        labels: avgData.map(d => d.city),
-        datasets: [{
-            label: 'Average Mobility Score',
-            data: avgData.map(d => d.avg),
-            backgroundColor: avgData.map((_, i) => `rgba(${i * 30}, ${100 + i * 20}, ${150 + i * 10}, 0.7)`)
-        }]
-    };
-
-
-      // Line Chart: Trends across cities
-    const lineData = {
+// New: Stacked Bar Chart for Mobility Solution Trends
+    const stackedBarData = {
         labels: selectedCities.map(city => city.city),
         datasets: labels.map((solution, i) => ({
             label: solution,
             data: selectedCities.map(city => city.mobility_solutions[solution]),
-            borderColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 1)`,
-            fill: false
+            backgroundColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 0.5)`
         }))
     };
 
+    // New: Horizontal Bar Chart for Average Mobility Solution Scores
+    const avgData = selectedCities.map(city => {
+        const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length;
+        return { city: city.city, avg: avgScore };
+    });
+    const horizontalBarData = {
+        labels: avgData.map(d => d.city),
+        datasets: [{
+            label: 'Average Mobility Score',
+            data: avgData.map(d => d.avg),
+            backgroundColor: 'rgba(75, 192, 192, 0.5)'
+        }]
+    };
 
-         // Pie Chart: Distribution in first selected city
+    // Pie Chart: Distribution in first selected city
     const avgDistribution = labels.map(solution =>
         selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution], 0) / selectedCities.length
     );
@@ -274,13 +286,14 @@
             backgroundColor: labels.map((_, i) => `rgba(${i * 50}, ${100 + i * 40}, ${150 - i * 20}, 0.5)`)
         }]
     };
-        // Initialize Charts
-        if (window.comparisonChart) window.comparisonChart.destroy();
-        if (window.barChart) window.barChart.destroy();
-        if (window.lineChart) window.lineChart.destroy();
-        if (window.pieChart) window.pieChart.destroy();
 
-           // Radar Chart
+    // Initialize Charts
+    if (window.comparisonChart) window.comparisonChart.destroy();
+    if (window.horizontalBarChart) window.horizontalBarChart.destroy();
+    if (window.stackedBarChart) window.stackedBarChart.destroy();
+    if (window.pieChart) window.pieChart.destroy();
+
+    // Radar Chart
     const radarCtx = document.getElementById("comparison-chart").getContext("2d");
     window.comparisonChart = new Chart(radarCtx, {
         type: "radar",
@@ -288,19 +301,29 @@
         options: { responsive: true }
     });
 
-    // Bar Chart
-    const barCtx = document.getElementById("bar-chart").getContext("2d");
-    window.barChart = new Chart(barCtx, {
-        type: "bar",
-        data: barData,
-        options: { responsive: true }
+    // New: Stacked Bar Chart for Mobility Solution Trends
+    const stackedBarCtx = document.getElementById("bar-chart").getContext("2d");
+    window.stackedBarChart = new Chart(stackedBarCtx, {
+        type: 'bar',
+        data: stackedBarData,
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true
+                }
+            }
+        }
     });
 
-    // Line Chart
-    const lineCtx = document.getElementById("line-chart").getContext("2d");
-    window.lineChart = new Chart(lineCtx, {
-        type: "line",
-        data: lineData,
+    // New: Horizontal Bar Chart for Average Mobility Solution Scores
+    const horizontalBarCtx = document.getElementById("line-chart").getContext("2d");
+    window.horizontalBarChart = new Chart(horizontalBarCtx, {
+        type: 'horizontalBar',
+        data: horizontalBarData,
         options: { responsive: true }
     });
 
@@ -312,6 +335,9 @@
         options: { responsive: true }
     });
 }
+        
+
+
     document.getElementById("compare-btn").addEventListener("click", () => {
         const selectedCities = getSelectedCities();
         if (selectedCities.length > 0) {
