@@ -225,91 +225,93 @@
     }
 
     function displayCharts(selectedCities) {
-        // Labels for all charts
-        const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
+    const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
 
-        // Radar Chart: Mobility solutions by city
-        const radarData = selectedCities.map((city, index) => ({
-            label: `${city.city}, ${city.country}`,
-            data: Object.values(city.mobility_solutions),
-            backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
-            borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
-        }));
+    // Radar Chart: Mobility solutions by city
+    const radarData = selectedCities.map((city, index) => ({
+        label: `${city.city}, ${city.country}`,
+        data: Object.values(city.mobility_solutions),
+        backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
+        borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`
+    }));
 
         // Bar Chart: Average score per city
-        const avgData = selectedCities.map(city => {
-            const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length;
-            return { city: city.city, avg: avgScore };
-        });
-        const barData = {
-            labels: avgData.map(d => d.city),
-            datasets: [{
-                label: 'Average Mobility Score',
-                data: avgData.map(d => d.avg),
-                backgroundColor: avgData.map((_, i) => `rgba(${i * 30}, ${100 + i * 20}, ${150 + i * 10}, 0.7)`)
-            }]
-        };
+    const avgData = selectedCities.map(city => {
+        const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length;
+        return { city: city.city, avg: avgScore };
+    });
+    const barData = {
+        labels: avgData.map(d => d.city),
+        datasets: [{
+            label: 'Average Mobility Score',
+            data: avgData.map(d => d.avg),
+            backgroundColor: avgData.map((_, i) => `rgba(${i * 30}, ${100 + i * 20}, ${150 + i * 10}, 0.7)`)
+        }]
+    };
 
-        // Line Chart: Trends across cities
-          const lineData = labels.map((solution, i) => ({
+
+      // Line Chart: Trends across cities
+    const lineData = {
+        labels: selectedCities.map(city => city.city),
+        datasets: labels.map((solution, i) => ({
             label: solution,
             data: selectedCities.map(city => city.mobility_solutions[solution]),
             borderColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 1)`,
             fill: false
-        }));
+        }))
+    };
 
-        // Pie Chart: Distribution in first selected city
-         const avgDistribution = labels.map(solution =>
-            selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution], 0) / selectedCities.length
-        );
-        const pieData = {
-            labels: labels,
-            datasets: [{
-                label: 'Average Distribution',
-                data: avgDistribution,
-                backgroundColor: labels.map((_, i) => `rgba(${i * 50}, ${100 + i * 40}, ${150 - i * 20}, 0.5)`)
-            }]
-        };
 
+         // Pie Chart: Distribution in first selected city
+    const avgDistribution = labels.map(solution =>
+        selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution], 0) / selectedCities.length
+    );
+    const pieData = {
+        labels: labels,
+        datasets: [{
+            label: 'Average Distribution',
+            data: avgDistribution,
+            backgroundColor: labels.map((_, i) => `rgba(${i * 50}, ${100 + i * 40}, ${150 - i * 20}, 0.5)`)
+        }]
+    };
         // Initialize Charts
         if (window.comparisonChart) window.comparisonChart.destroy();
         if (window.barChart) window.barChart.destroy();
         if (window.lineChart) window.lineChart.destroy();
         if (window.pieChart) window.pieChart.destroy();
 
-        // Radar Chart
-        const radarCtx = document.getElementById("comparison-chart").getContext("2d");
-        window.comparisonChart = new Chart(radarCtx, {
-            type: "radar",
-            data: { labels, datasets: radarData },
-            options: { responsive: true }
-        });
+           // Radar Chart
+    const radarCtx = document.getElementById("comparison-chart").getContext("2d");
+    window.comparisonChart = new Chart(radarCtx, {
+        type: "radar",
+        data: { labels, datasets: radarData },
+        options: { responsive: true }
+    });
 
-        // Bar Chart
-        const barCtx = document.getElementById("bar-chart").getContext("2d");
-        window.barChart = new Chart(barCtx, {
-            type: "bar",
-            data: barData,
-            options: { responsive: true }
-        });
+    // Bar Chart
+    const barCtx = document.getElementById("bar-chart").getContext("2d");
+    window.barChart = new Chart(barCtx, {
+        type: "bar",
+        data: barData,
+        options: { responsive: true }
+    });
 
-        // Line Chart
-        const lineCtx = document.getElementById("line-chart").getContext("2d");
-        window.lineChart = new Chart(lineCtx, {
-            type: "line",
-            data: { labels: selectedCities.map(city => city.city), datasets: lineData },
-            options: { responsive: true }
-        });
+    // Line Chart
+    const lineCtx = document.getElementById("line-chart").getContext("2d");
+    window.lineChart = new Chart(lineCtx, {
+        type: "line",
+        data: lineData,
+        options: { responsive: true }
+    });
 
-        // Pie Chart
-        const pieCtx = document.getElementById("pie-chart").getContext("2d");
-        window.pieChart = new Chart(pieCtx, {
-            type: "pie",
-            data: pieData,
-            options: { responsive: true }
-        });
-    }
-
+    // Pie Chart
+    const pieCtx = document.getElementById("pie-chart").getContext("2d");
+    window.pieChart = new Chart(pieCtx, {
+        type: "pie",
+        data: pieData,
+        options: { responsive: true }
+    });
+}
     document.getElementById("compare-btn").addEventListener("click", () => {
         const selectedCities = getSelectedCities();
         if (selectedCities.length > 0) {
