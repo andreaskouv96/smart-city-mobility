@@ -118,7 +118,8 @@
 <div id="Cities-Comparison" class="tab-content">
     <div class="comparison-container">
         <h2>Select Cities for Comparison</h2>
-        <div id="city-checkboxes"></div>
+         <div id="city-checkboxes" class="city-selection"></div>
+
         <div class="buttons-container">
             <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
             <button id="reset-btn" class="action-btn">Reset Selection</button>
@@ -146,6 +147,74 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="cityData_full_with_country_codes.js"></script>
+
+<style>
+    /* Improved styling for the UI components */
+    .comparison-container {
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+    }
+
+    .buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .action-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .action-btn:hover {
+        background-color: #45a049;
+    }
+
+    #chart-container {
+        margin-top: 20px;
+    }
+
+    /* Styling for the city checkboxes */
+    .city-selection {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    .city-selection label {
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform 0.3s, background-color 0.3s;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .city-selection label:hover {
+        background-color: #e0e0e0;
+        transform: scale(1.02);
+    }
+
+    .city-selection input[type="checkbox"] {
+        accent-color: #4CAF50; /* Customize checkbox color */
+        width: 18px;
+        height: 18px;
+    }
+</style>
+
 
 <script>
     function populateCityCheckboxes() {
