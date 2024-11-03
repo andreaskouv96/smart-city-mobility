@@ -105,19 +105,28 @@
         </div>
         <div class="navbar">
             <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'Cities Comparison')">Cities Comparison</a>
             <a href="#" class="tab-link" onclick="openTab(event, 'Cities-Comparison')">Cities-Comparison</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
-        </div>
+@@ -118,133 +118,100 @@
     </div>
 
-    <div id="Histograms" class="tab-content active-content">
-        <div id="city-data-container"></div>
-        <button id="load-more">Load More</button>
-    </div>
 
-    
+<div id="Cities Comparison" class="tab-content">
+    <div class="container">
+        <h2>Comparison Between Cities - Mobility Solutions</h2>
+        <h3>Select Cities to Compare:</h3>
+        <select id="city-selection" multiple size="5" style="width: 100%; padding: 5px; margin-top: 10px;">
+        <button onclick="updateCharts()">Update Charts</button>
+        
+        <!-- Grafici -->
+        <h3>Global Comparison of Mobility Solutions</h3>
+        <canvas id="radarChart" width="400" height="400"></canvas>
+        <h3>Congestion Reduction by Mobility Solution</h3>
+        <canvas id="barChart" width="600" height="400"></canvas>
+    </div>
 <div id="Cities-Comparison" class="tab-content">
     <div class="comparison-container">
             <h2>Select Cities for Comparison</h2>
@@ -127,8 +136,33 @@
         </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="cityData_full_with_country_codes.json"></script>
+    
+   <script>
+    let cityDataForComparison = [];
+    // Funzione per caricare i dati dal file JSON
+    async function loadCityData() {
+        try {
+            const response = await fetch('cityData_full_with_country_codes.json'); // Sostituisci con il percorso corretto
+            if (!response.ok) throw new Error("Errore nel caricamento dei dati");
+            
+            cityDataForComparison = await response.json();
+            initializeCitySelection();
+            updateCharts();
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati JSON:", error);
+        }
+    }
+    // Funzione per generare i checkbox per le città
+    function initializeCitySelection() {
+           const citySelection = document.getElementById("city-selection");
+    citySelection.innerHTML = ''; // Pulizia contenuto precedente
+    cityDataForComparison.forEach(city => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}<br>`;
+        citySelection.appendChild(label);
+    });
     <script src="cityData_full_with_country_codes.js"></script>
-
     <script>
         function openTab(event, tabName) {
             const tabContents = document.getElementsByClassName("tab-content");
@@ -143,21 +177,45 @@
             event.currentTarget.classList.add("active-tab");
         }
 
+    // Funzione per aprire i tab e visualizzare i dati
+    function openTab(event, tabName) {
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (let content of tabContents) {
+            content.classList.remove("active-content");
         function populateCityCheckboxes() {
             const container = document.getElementById("city-checkboxes");
             cityData.forEach((city, index) => {
                 const label = document.createElement("label");
-                label.innerHTML = <input type="checkbox" value="${index}"> ${city.city}, ${city.country};
+                label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
                 container.appendChild(label);
                 container.appendChild(document.createElement("br"));
             });
         }
-
+        const tabLinks = document.getElementsByClassName("tab-link");
+        for (let link of tabLinks) {
+            link.classList.remove("active-tab");
         function getSelectedCities() {
             const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
             return Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
         }
-
+        document.getElementById(tabName).classList.add("active-content");
+        event.currentTarget.classList.add("active-tab");
+    }
+    // Funzione per ottenere le città selezionate
+    function getSelectedCities() {
+            const selectedOptions = Array.from(document.querySelectorAll("#city-selection option:checked"));
+            const selectedCities = selectedOptions.map(option => option.value);
+            return cityDataForComparison.filter(city => selectedCities.includes(city.city));
+    }
+    // Funzione per aggiornare i grafici
+    function updateCharts() {
+        const selectedCities = getSelectedCities();
+        if (selectedCities.length === 0) return;
+        const radarLabels = Object.keys(selectedCities[0].mobility_solutions);
+        const radarData = {
+            labels: radarLabels,
+            datasets: selectedCities.map((city, index) => ({
+                label: city.city,
         function displayComparisonChart(selectedCities) {
             const labels = [
                 'Car-sharing Apps',
@@ -166,16 +224,29 @@
                 'Online Scheduling',
                 'Traffic Info Apps'
             ];
-
             const datasets = selectedCities.map((city, index) => ({
-                label: ${city.city}, ${city.country},
+                label: `${city.city}, ${city.country}`,
                 data: Object.values(city.mobility_solutions),
                 fill: true,
-                backgroundColor: rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2),
-                borderColor: rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1),
+                backgroundColor: `rgba(${index * 50}, ${100 + index * 30}, ${200 - index * 30}, 0.2)`,
+                borderColor: `rgba(${index * 50}, ${100 + index * 30}, ${200 - index * 30}, 1)`,
+                backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
+                borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
                 borderWidth: 1
+            }))
+        };
             }));
 
+        const barData = {
+            labels: selectedCities.map(city => city.city),
+            datasets: radarLabels.map((solution, index) => ({
+                label: solution,
+                data: selectedCities.map(city => city.mobility_solutions[solution]),
+                backgroundColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 0.5)`,
+                borderColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 1)`,
+                borderWidth: 1
+            }))
+        };
             const ctx = document.getElementById("comparison-chart").getContext("2d");
             new Chart(ctx, {
                 type: "radar",
@@ -195,6 +266,16 @@
             });
         }
 
+        if (radarChart) radarChart.destroy();
+        if (barChart) barChart.destroy();
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        radarChart = new Chart(radarCtx, {
+            type: 'radar',
+            data: radarData,
+            options: {
+                responsive: true,
+                scales: { r: { beginAtZero: true, max: 100 }},
+                plugins: { legend: { position: 'top' }}
         document.getElementById("compare-btn").addEventListener("click", () => {
             const selectedCities = getSelectedCities();
             if (selectedCities.length > 0) {
@@ -204,18 +285,30 @@
             }
         });
 
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: barData,
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, max: 100 }},
+                plugins: { legend: { position: 'top' }}
+            }
+        });
+    }
         window.onload = function() {
             populateCityCheckboxes();
             displayCityData();
         };
-
-
     </script>
 
+    // Carica i dati all'avvio della pagina
+    window.onload = loadCityData;
+</script>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="cityData_full_with_country_codes.js"></script>
+<script src="cityData_full_with_country_codes.js"></script>
 
     <script>
         function openTab(event, tabName) {
@@ -251,18 +344,18 @@
 
                 if (city.country_code) {
                     const flagImg = document.createElement('img');
-                    flagImg.src = https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png;
-                    flagImg.alt = ${city.country} flag;
+                    flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
+                    flagImg.alt = `${city.country} flag`;
                     flagImg.style.width = '20px';
                     flagImg.style.marginRight = '8px';
                     cityTitle.appendChild(flagImg);
                 }
 
-                cityTitle.appendChild(document.createTextNode(${city.city}, ${city.country}));
+                cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
                 cityInfoDiv.appendChild(cityTitle);
 
                 const createdAt = document.createElement('div');
-                createdAt.textContent = Data Created At: ${city.created_at || 'N/A'};
+                createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
                 cityInfoDiv.appendChild(createdAt);
 
                 const mobilitySolutionsTitle = document.createElement('div');
@@ -272,21 +365,21 @@
                 const mobilitySolutions = document.createElement('ul');
                 for (const [solution, value] of Object.entries(city.mobility_solutions)) {
                     const solutionItem = document.createElement('li');
-                    solutionItem.textContent = ${solution}: ${value}%;
+                    solutionItem.textContent = `${solution}: ${value}%`;
                     mobilitySolutions.appendChild(solutionItem);
                 }
                 cityInfoDiv.appendChild(mobilitySolutions);
 
                 const trafficCongestion = document.createElement('div');
-                trafficCongestion.textContent = Traffic Congestion Not a Problem: ${city.traffic_congestion_not_a_problem}%;
+                trafficCongestion.textContent = `Traffic Congestion Not a Problem: ${city.traffic_congestion_not_a_problem}%`;
                 cityInfoDiv.appendChild(trafficCongestion);
 
                 const publicTransport = document.createElement('div');
-                publicTransport.textContent = Public Transport Satisfactory: ${city.public_transport_satisfactory}%;
+                publicTransport.textContent = `Public Transport Satisfactory: ${city.public_transport_satisfactory}%`;
                 cityInfoDiv.appendChild(publicTransport);
 
                 const smartCityRanking = document.createElement('div');
-                smartCityRanking.textContent = Smart City Ranking: ${city.smart_city_ranking};
+                smartCityRanking.textContent = `Smart City Ranking: ${city.smart_city_ranking}`;
                 cityInfoDiv.appendChild(smartCityRanking);
 
                 cityDiv.appendChild(cityInfoDiv);
@@ -294,7 +387,7 @@
                 const chartContainer = document.createElement('div');
                 chartContainer.className = 'chart-container';
                 const chartCanvas = document.createElement('canvas');
-                chartCanvas.id = chart-${i};
+                chartCanvas.id = `chart-${i}`;
                 chartContainer.appendChild(chartCanvas);
                 cityDiv.appendChild(chartContainer);
 
@@ -352,7 +445,7 @@
                                 font: {
                                     size: 10
                                 }
-                           
+
                             }
                         },
                         y: {
@@ -362,7 +455,7 @@
                     },
                     plugins: {
                         legend: {
-                            display: false
+                         display: false
                         }
                     }
                 }
