@@ -127,18 +127,21 @@
         
         <!-- Radar Chart -->
         <h3>Comparison of Mobility Solutions</h3>
+        <p>Each axis represents a different mobility solution, showing the score for each selected city in areas such as car-sharing apps, bicycle hiring, and more. Higher scores indicate stronger availability or quality in that solution.</p>
         <div id="chart-container">
             <canvas id="comparison-chart" width="400" height="400"></canvas>
         </div>
 
         <!-- Bar Chart for Average Comparison -->
         <h3>Average Mobility Solution Scores by City</h3>
+        <p>This bar chart shows the average score of all mobility solutions for each selected city, providing a quick overview of which cities generally perform better across all solutions.</p>
         <div id="bar-chart-container">
             <canvas id="bar-chart" width="400" height="400"></canvas>
         </div>
 
         <!-- Doughnut Chart for Solution Distribution -->
         <h3>Mobility Solution Distribution per City</h3>
+        <p>The doughnut chart visualizes the distribution of scores for different mobility solutions within each city, illustrating which solutions are most developed in comparison to others within the same city.</p>
         <div id="doughnut-chart-container">
             <canvas id="doughnut-chart" width="400" height="400"></canvas>
         </div>
@@ -149,7 +152,6 @@
 <script src="cityData_full_with_country_codes.js"></script>
 
 <style>
-    /* Improved styling for the UI components */
     .comparison-container {
         max-width: 800px;
         margin: auto;
@@ -177,11 +179,10 @@
         background-color: #45a049;
     }
 
-    #chart-container {
+    #chart-container, #bar-chart-container, #doughnut-chart-container {
         margin-top: 20px;
     }
 
-    /* Styling for the city checkboxes */
     .city-selection {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -209,14 +210,13 @@
     }
 
     .city-selection input[type="checkbox"] {
-        accent-color: #4CAF50; /* Customize checkbox color */
+        accent-color: #4CAF50;
         width: 18px;
         height: 18px;
     }
 </style>
 
 <script>
-    // Variabili per i grafici inizializzate a null
     let comparisonChart = null;
     let barChart = null;
     let doughnutChart = null;
@@ -234,14 +234,13 @@
     function getSelectedCities() {
         const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
         const selectedCities = Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
-        console.log("Selected Cities:", selectedCities);  // Debug
+        console.log("Selected Cities:", selectedCities); 
         return selectedCities;
     }
 
     function displayComparisonChart(selectedCities) {
         const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
         
-        // Dati per il grafico radar
         const radarDatasets = selectedCities.map((city, index) => ({
             label: `${city.city}, ${city.country}`,
             data: Object.values(city.mobility_solutions),
@@ -251,14 +250,12 @@
             borderWidth: 1
         }));
 
-        // Dati per il grafico a barre (media dei punteggi)
         const avgData = selectedCities.map(city => ({
             label: city.city,
             data: [Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length],
             backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`,
         }));
 
-        // Dati per il grafico a ciambella (distribuzione delle soluzioni)
         const doughnutData = {
             labels: labels,
             datasets: selectedCities.map((city, index) => ({
@@ -268,12 +265,10 @@
             }))
         };
 
-        // Distrugge i grafici precedenti
         if (comparisonChart) comparisonChart.destroy();
         if (barChart) barChart.destroy();
         if (doughnutChart) doughnutChart.destroy();
 
-        // Crea il grafico radar
         const radarCtx = document.getElementById("comparison-chart").getContext("2d");
         comparisonChart = new Chart(radarCtx, {
             type: "radar",
@@ -281,11 +276,10 @@
             options: {
                 responsive: true,
                 scales: { r: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: "top" }}
+                plugins: { legend: { position: "top", labels: { boxWidth: 20, font: { size: 14 } }}}
             }
         });
 
-        // Crea il grafico a barre
         const barCtx = document.getElementById("bar-chart").getContext("2d");
         barChart = new Chart(barCtx, {
             type: "bar",
@@ -297,14 +291,13 @@
             }
         });
 
-        // Crea il grafico a ciambella
         const doughnutCtx = document.getElementById("doughnut-chart").getContext("2d");
         doughnutChart = new Chart(doughnutCtx, {
             type: "doughnut",
             data: doughnutData,
             options: {
                 responsive: true,
-                plugins: { legend: { position: "top" }},
+                plugins: { legend: { position: "top", labels: { boxWidth: 20, font: { size: 14 } }}},
             }
         });
     }
@@ -329,6 +322,7 @@
         populateCityCheckboxes();
     };
 </script>
+
 
 
     </div>
