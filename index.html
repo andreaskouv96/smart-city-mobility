@@ -252,16 +252,6 @@
             borderWidth: 1
         }));
 
-        // Stacked Bar Chart for Mobility Solution Trends
-        const stackedBarData = {
-            labels: selectedCities.map(city => city.city),
-            datasets: labels.map((solution, i) => ({
-                label: solution,
-                data: selectedCities.map(city => city.mobility_solutions[solution]),
-                backgroundColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 0.5)`
-            }))
-        };
-
         // Horizontal Bar Chart for Average Mobility Solution Scores
         const avgData = selectedCities.map(city => {
             const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b, 0) / labels.length;
@@ -274,6 +264,16 @@
                 data: avgData.map(d => d.avg),
                 backgroundColor: 'rgba(75, 192, 192, 0.5)'
             }]
+        };
+
+        // Stacked Bar Chart for Mobility Solution Trends
+        const stackedBarData = {
+            labels: selectedCities.map(city => city.city),
+            datasets: labels.map((solution, i) => ({
+                label: solution,
+                data: selectedCities.map(city => city.mobility_solutions[solution]),
+                backgroundColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 0.5)`
+            }))
         };
 
         // Pie Chart: Average Distribution of Solutions
@@ -291,8 +291,8 @@
 
         // Destroy previous charts if they exist
         if (window.comparisonChart) window.comparisonChart.destroy();
-        if (window.stackedBarChart) window.stackedBarChart.destroy();
         if (window.horizontalBarChart) window.horizontalBarChart.destroy();
+        if (window.stackedBarChart) window.stackedBarChart.destroy();
         if (window.pieChart) window.pieChart.destroy();
 
         // Radar Chart
@@ -303,10 +303,21 @@
             options: { responsive: true }
         });
 
-        // Stacked Bar Chart
-        const stackedBarCtx = document.getElementById("bar-chart").getContext("2d");
-        window.stackedBarChart = new Chart(stackedBarCtx, {
+        // Horizontal Bar Chart for Average Mobility Solution Scores
+        const horizontalBarCtx = document.getElementById("bar-chart").getContext("2d");
+        window.horizontalBarChart = new Chart(horizontalBarCtx, {
             type: 'bar',
+            data: horizontalBarData,
+            options: {
+                indexAxis: 'y', // Set the index axis to 'y' to make it horizontal
+                responsive: true
+            }
+        });
+
+        // Stacked Bar Chart for Mobility Solution Trends
+        const stackedBarCtx = document.getElementById("line-chart").getContext("2d");
+        window.stackedBarChart = new Chart(stackedBarCtx, {
+            type: 'bar', // Keep it as a bar chart, as it can be used for stacking
             data: stackedBarData,
             options: {
                 responsive: true,
@@ -318,17 +329,6 @@
                         stacked: true
                     }
                 }
-            }
-        });
-
-        // Horizontal Bar Chart for Average Mobility Solution Scores
-        const horizontalBarCtx = document.getElementById("line-chart").getContext("2d");
-        window.horizontalBarChart = new Chart(horizontalBarCtx, {
-            type: 'bar', // Use 'bar' instead of 'horizontalBar'
-            data: horizontalBarData,
-            options: {
-                indexAxis: 'y', // Set the index axis to 'y' to make it horizontal
-                responsive: true
             }
         });
 
@@ -353,8 +353,8 @@
     document.getElementById("reset-btn").addEventListener("click", () => {
         document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
         if (window.comparisonChart) window.comparisonChart.destroy();
-        if (window.stackedBarChart) window.stackedBarChart.destroy();
         if (window.horizontalBarChart) window.horizontalBarChart.destroy();
+        if (window.stackedBarChart) window.stackedBarChart.destroy();
         if (window.pieChart) window.pieChart.destroy();
     });
 
