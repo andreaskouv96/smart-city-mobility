@@ -139,11 +139,18 @@
             <canvas id="bar-chart" width="400" height="400"></canvas>
         </div>
 
-        <!-- Doughnut Chart for Solution Distribution -->
-        <h3>Mobility Solution Distribution per City</h3>
-        <p>The doughnut chart visualizes the distribution of scores for different mobility solutions within each city, illustrating which solutions are most developed in comparison to others within the same city.</p>
-        <div id="doughnut-chart-container">
-            <canvas id="doughnut-chart" width="400" height="400"></canvas>
+        <!-- Line Chart for Mobility Solution Trends -->
+        <h3>Mobility Solution Trends Across Cities</h3>
+        <p>This line chart highlights the differences in each mobility solution across the selected cities, showing how scores fluctuate.</p>
+        <div id="line-chart-container">
+            <canvas id="line-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Bubble Chart for Detailed Mobility Solutions -->
+        <h3>Bubble Chart of Mobility Solutions by City</h3>
+        <p>The bubble chart displays each solution’s score, with bubble size representing the score magnitude. This provides an engaging way to compare individual solutions between cities.</p>
+        <div id="bubble-chart-container">
+            <canvas id="bubble-chart" width="400" height="400"></canvas>
         </div>
     </div>
 </div>
@@ -179,7 +186,7 @@
         background-color: #45a049;
     }
 
-    #chart-container, #bar-chart-container, #doughnut-chart-container {
+    #chart-container, #bar-chart-container, #line-chart-container, #bubble-chart-container {
         margin-top: 20px;
     }
 
@@ -219,7 +226,8 @@
 <script>
     let comparisonChart = null;
     let barChart = null;
-    let doughnutChart = null;
+    let lineChart = null;
+    let bubbleChart = null;
 
     function populateCityCheckboxes() {
         const container = document.getElementById("city-checkboxes");
@@ -234,11 +242,10 @@
     function getSelectedCities() {
         const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
         const selectedCities = Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
-        console.log("Selected Cities:", selectedCities); 
         return selectedCities;
     }
 
-    function displayComparisonChart(selectedCities) {
+    function displayCharts(selectedCities) {
         const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
         
         const radarDatasets = selectedCities.map((city, index) => ({
@@ -250,27 +257,38 @@
             borderWidth: 1
         }));
 
-        const avgData = selectedCities.map(city => ({
-            label: city.city,
-            data: [Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length],
-            backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`,
+        const avgData = {
+            labels: selectedCities.map(city => city.city),
+            datasets: [{
+                label: "Average Score",
+                data: selectedCities.map(city => Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length),
+                backgroundColor: `rgba(75, 192, 192, 0.7)`,
+            }]
+        };
+
+        const lineDatasets = labels.map((solution, i) => ({
+            label: solution,
+            data: selectedCities.map(city => city.mobility_solutions[solution.toLowerCase().replace(" ", "_")]),
+            borderColor: `rgba(${i * 50}, ${255 - i * 30}, ${i * 70}, 1)`,
+            fill: false
         }));
 
-        const doughnutData = {
-            labels: labels,
-            datasets: selectedCities.map((city, index) => ({
-                label: `${city.city}, ${city.country}`,
-                data: Object.values(city.mobility_solutions),
-                backgroundColor: labels.map(() => `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`),
-            }))
-        };
+        const bubbleDatasets = selectedCities.map((city, index) => ({
+            label: `${city.city}, ${city.country}`,
+            data: labels.map((solution, i) => ({
+                x: i + 1,
+                y: city.mobility_solutions[solution.toLowerCase().replace(" ", "_")],
+                r: city.mobility_solutions[solution.toLowerCase().replace(" ", "_")] / 2
+            })),
+            backgroundColor: `rgba(${(index * 80) % 255}, ${(index * 130) % 255}, ${(index * 180) % 255}, 0.6)`,
+        }));
 
         if (comparisonChart) comparisonChart.destroy();
         if (barChart) barChart.destroy();
-        if (doughnutChart) doughnutChart.destroy();
+        if (lineChart) lineChart.destroy();
+        if (bubbleChart) bubbleChart.destroy();
 
-        const radarCtx = document.getElementById("comparison-chart").getContext("2d");
-        comparisonChart = new Chart(radarCtx, {
+        comparisonChart = new Chart(document.getElementById("comparison-chart").getContext("2d"), {
             type: "radar",
             data: { labels: labels, datasets: radarDatasets },
             options: {
@@ -280,24 +298,36 @@
             }
         });
 
-        const barCtx = document.getElementById("bar-chart").getContext("2d");
-        barChart = new Chart(barCtx, {
+        barChart = new Chart(document.getElementById("bar-chart").getContext("2d"), {
             type: "bar",
-            data: { labels: selectedCities.map(city => city.city), datasets: avgData },
+            data: avgData,
             options: {
                 responsive: true,
                 scales: { y: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { display: false }}
+                plugins: { legend: { display: true, position: "top" }}
             }
         });
 
-        const doughnutCtx = document.getElementById("doughnut-chart").getContext("2d");
-        doughnutChart = new Chart(doughnutCtx, {
-            type: "doughnut",
-            data: doughnutData,
+        lineChart = new Chart(document.getElementById("line-chart").getContext("2d"), {
+            type: "line",
+            data: { labels: selectedCities.map(city => city.city), datasets: lineDatasets },
             options: {
                 responsive: true,
-                plugins: { legend: { position: "top", labels: { boxWidth: 20, font: { size: 14 } }}},
+                scales: { y: { beginAtZero: true, max: 100 }},
+                plugins: { legend: { position: "top" }}
+            }
+        });
+
+        bubbleChart = new Chart(document.getElementById("bubble-chart").getContext("2d"), {
+            type: "bubble",
+            data: { datasets: bubbleDatasets },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { beginAtZero: true, title: { display: true, text: 'Mobility Solutions' }},
+                    y: { beginAtZero: true, max: 100, title: { display: true, text: 'Score' }},
+                },
+                plugins: { legend: { position: "top" }}
             }
         });
     }
@@ -305,7 +335,7 @@
     document.getElementById("compare-btn").addEventListener("click", () => {
         const selectedCities = getSelectedCities();
         if (selectedCities.length > 0) {
-            displayComparisonChart(selectedCities);
+            displayCharts(selectedCities);
         } else {
             alert("Please select at least one city to compare.");
         }
@@ -315,7 +345,8 @@
         document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
         if (comparisonChart) comparisonChart.destroy();
         if (barChart) barChart.destroy();
-        if (doughnutChart) doughnutChart.destroy();
+        if (lineChart) lineChart.destroy();
+        if (bubbleChart) bubbleChart.destroy();
     });
 
     window.onload = function() {
