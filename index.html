@@ -105,7 +105,7 @@
         </div>
         <div class="navbar">
             <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
-            <a href="#" class="tab-link" onclick="openTab(event, 'Cities In Numbers')">Cities In Numbers</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'CitiesInNumbers')">CitiesInNumbers</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
@@ -118,22 +118,38 @@
     </div>
 
     
-    <div id="Cities In Numbers" class="tab-content">
-        <div id="Cities In Numbers" class="tab-content">
-    <div class="container">
+    <div id="CitiesInNumbers" class="tab-content">
+        <div class="container">
         <h2>Comparison Between Cities - Mobility Solutions</h2>
-        
-        <!-- Radar Chart per confronto generale -->
-        <h3>Global Comparison of Mobility Solutions</h3>
-        <canvas id="radarChart" width="400" height="400"></canvas>
-
-        <!-- Bar Chart per confronto dettagliato -->
-        <h3>Congestion Reduction by Mobility Solution</h3>
-        <canvas id="barChart" width="600" height="400"></canvas>
+            <h3>Global Comparison of Mobility Solutions</h3>
+            <canvas id="radarChart" width="400" height="400"></canvas>
+            <h3>Congestion Reduction by Mobility Solution</h3>
+            <canvas id="barChart" width="600" height="400"></canvas>
+        </div>
     </div>
-</div>
+
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="cityData_full_with_country_codes.js"></script>
+
 
 <script>
+        function openTab(event, tabName) {
+            // Nascondi tutti i contenuti dei tab
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let content of tabContents) {
+                content.classList.remove("active-content");
+            }
+            
+            // Rimuovi la classe attiva dai link della barra di navigazione
+            const tabLinks = document.getElementsByClassName("tab-link");
+            for (let link of tabLinks) {
+                link.classList.remove("active-tab");
+            }
+
+            // Mostra il tab selezionato e aggiungi la classe attiva al link
+            document.getElementById(tabName).classList.add("active-content");
+            event.currentTarget.classList.add("active-tab");
+        }
     // Dati delle città per il confronto delle soluzioni di mobilità
     const cityDataForComparison = [
         {'city': 'Zurich', 'mobility_solutions': {'Car-sharing': 43.6, 'Parking Apps': 44.5, 'Bicycle hiring': 55.6, 'Scheduling': 79.7, 'Traffic Info': 61.8}},
