@@ -122,7 +122,7 @@
     <div class="container">
         <h2>Comparison Between Cities - Mobility Solutions</h2>
         <h3>Select Cities to Compare:</h3>
-        <div id="city-selection"></div>
+        <select id="city-selection" multiple size="5" style="width: 100%; padding: 5px; margin-top: 10px;">
         <button onclick="updateCharts()">Update Charts</button>
         
         <!-- Grafici -->
@@ -158,11 +158,12 @@
             const citySelection = document.getElementById("city-selection");
             citySelection.innerHTML = ''; // Pulizia contenuto precedente
 
-            cityDataForComparison.forEach(city => {
-                const label = document.createElement("label");
-                label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}<br>`;
-                citySelection.appendChild(label);
-            });
+             cityDataForComparison.forEach(city => {
+                const option = document.createElement("option");
+                option.value = city.city;
+                option.textContent = city.city;
+                citySelection.appendChild(option);
+            });    
         }
 
     // Funzione per aprire i tab e visualizzare i dati
@@ -181,8 +182,9 @@
 
     // Funzione per ottenere le città selezionate
     function getSelectedCities() {
-        const selectedCities = Array.from(document.querySelectorAll("#city-form input[name='city']:checked")).map(checkbox => checkbox.value);
-        return cityDataForComparison.filter(city => selectedCities.includes(city.city));
+            const selectedOptions = Array.from(document.querySelectorAll("#city-selection option:checked"));
+            const selectedCities = selectedOptions.map(option => option.value);
+            return cityDataForComparison.filter(city => selectedCities.includes(city.city));
     }
 
     // Funzione per aggiornare i grafici
