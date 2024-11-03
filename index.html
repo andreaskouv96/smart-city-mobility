@@ -105,7 +105,7 @@
         </div>
         <div class="navbar">
             <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
-            <a href="#" class="tab-link" onclick="openTab(event, 'Cities Comparison')">Cities Comparison</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'Cities-Comparison')">Cities-Comparison</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
@@ -118,133 +118,100 @@
     </div>
 
     
-<div id="Cities Comparison" class="tab-content">
-    <div class="container">
-        <h2>Comparison Between Cities - Mobility Solutions</h2>
-        <h3>Select Cities to Compare:</h3>
-        <select id="city-selection" multiple size="5" style="width: 100%; padding: 5px; margin-top: 10px;">
-        <button onclick="updateCharts()">Update Charts</button>
-        
-        <!-- Grafici -->
-        <h3>Global Comparison of Mobility Solutions</h3>
-        <canvas id="radarChart" width="400" height="400"></canvas>
-        <h3>Congestion Reduction by Mobility Solution</h3>
-        <canvas id="barChart" width="600" height="400"></canvas>
-    </div>
+<div id="Cities-Comparison" class="tab-content">
+    <div class="comparison-container">
+            <h2>Select Cities for Comparison</h2>
+            <div id="city-checkboxes"></div>
+            <button id="compare-btn">Compare Selected Cities</button>
+            <canvas id="comparison-chart" width="400" height="400"></canvas>
+        </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="cityData_full_with_country_codes.json"></script>
-    
-   <script>
-    let cityDataForComparison = [];
+    <script src="cityData_full_with_country_codes.js"></script>
 
-    // Funzione per caricare i dati dal file JSON
-    async function loadCityData() {
-        try {
-            const response = await fetch('cityData_full_with_country_codes.json'); // Sostituisci con il percorso corretto
-            if (!response.ok) throw new Error("Errore nel caricamento dei dati");
-            
-            cityDataForComparison = await response.json();
-            initializeCitySelection();
-            updateCharts();
-        } catch (error) {
-            console.error("Errore nel caricamento dei dati JSON:", error);
-        }
-    }
-
-    // Funzione per generare i checkbox per le città
-    function initializeCitySelection() {
-           const citySelection = document.getElementById("city-selection");
-    citySelection.innerHTML = ''; // Pulizia contenuto precedente
-
-    cityDataForComparison.forEach(city => {
-        const label = document.createElement("label");
-        label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}<br>`;
-        citySelection.appendChild(label);
-    });
+    <script>
+        function openTab(event, tabName) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let content of tabContents) {
+                content.classList.remove("active-content");
+            }
+            const tabLinks = document.getElementsByClassName("tab-link");
+            for (let link of tabLinks) {
+                link.classList.remove("active-tab");
+            }
+            document.getElementById(tabName).classList.add("active-content");
+            event.currentTarget.classList.add("active-tab");
         }
 
-    // Funzione per aprire i tab e visualizzare i dati
-    function openTab(event, tabName) {
-        const tabContents = document.getElementsByClassName("tab-content");
-        for (let content of tabContents) {
-            content.classList.remove("active-content");
+        function populateCityCheckboxes() {
+            const container = document.getElementById("city-checkboxes");
+            cityData.forEach((city, index) => {
+                const label = document.createElement("label");
+                label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
+                container.appendChild(label);
+                container.appendChild(document.createElement("br"));
+            });
         }
-        const tabLinks = document.getElementsByClassName("tab-link");
-        for (let link of tabLinks) {
-            link.classList.remove("active-tab");
+
+        function getSelectedCities() {
+            const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
+            return Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
         }
-        document.getElementById(tabName).classList.add("active-content");
-        event.currentTarget.classList.add("active-tab");
-    }
 
-    // Funzione per ottenere le città selezionate
-    function getSelectedCities() {
-            const selectedOptions = Array.from(document.querySelectorAll("#city-selection option:checked"));
-            const selectedCities = selectedOptions.map(option => option.value);
-            return cityDataForComparison.filter(city => selectedCities.includes(city.city));
-    }
+        function displayComparisonChart(selectedCities) {
+            const labels = [
+                'Car-sharing Apps',
+                'Parking Apps',
+                'Bicycle Hiring',
+                'Online Scheduling',
+                'Traffic Info Apps'
+            ];
 
-    // Funzione per aggiornare i grafici
-    function updateCharts() {
-        const selectedCities = getSelectedCities();
-        if (selectedCities.length === 0) return;
-
-        const radarLabels = Object.keys(selectedCities[0].mobility_solutions);
-
-        const radarData = {
-            labels: radarLabels,
-            datasets: selectedCities.map((city, index) => ({
-                label: city.city,
+            const datasets = selectedCities.map((city, index) => ({
+                label: `${city.city}, ${city.country}`,
                 data: Object.values(city.mobility_solutions),
                 fill: true,
-                backgroundColor: `rgba(${index * 50}, ${100 + index * 30}, ${200 - index * 30}, 0.2)`,
-                borderColor: `rgba(${index * 50}, ${100 + index * 30}, ${200 - index * 30}, 1)`,
+                backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
+                borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
                 borderWidth: 1
-            }))
-        };
+            }));
 
-        const barData = {
-            labels: selectedCities.map(city => city.city),
-            datasets: radarLabels.map((solution, index) => ({
-                label: solution,
-                data: selectedCities.map(city => city.mobility_solutions[solution]),
-                backgroundColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 0.5)`,
-                borderColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 1)`,
-                borderWidth: 1
-            }))
-        };
+            const ctx = document.getElementById("comparison-chart").getContext("2d");
+            new Chart(ctx, {
+                type: "radar",
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
 
-        if (radarChart) radarChart.destroy();
-        if (barChart) barChart.destroy();
-
-        const radarCtx = document.getElementById('radarChart').getContext('2d');
-        radarChart = new Chart(radarCtx, {
-            type: 'radar',
-            data: radarData,
-            options: {
-                responsive: true,
-                scales: { r: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: 'top' }}
+        document.getElementById("compare-btn").addEventListener("click", () => {
+            const selectedCities = getSelectedCities();
+            if (selectedCities.length > 0) {
+                displayComparisonChart(selectedCities);
+            } else {
+                alert("Please select at least one city to compare.");
             }
         });
 
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        barChart = new Chart(barCtx, {
-            type: 'bar',
-            data: barData,
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, max: 100 }},
-                plugins: { legend: { position: 'top' }}
-            }
-        });
-    }
+        window.onload = function() {
+            populateCityCheckboxes();
+            displayCityData();
+        };
 
-    // Carica i dati all'avvio della pagina
-    window.onload = loadCityData;
-</script>
+
+    </script>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
