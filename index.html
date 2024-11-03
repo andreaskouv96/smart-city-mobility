@@ -252,22 +252,23 @@
             borderWidth: 1
         }));
 
-        // Horizontal Bar Chart for Average Mobility Solution Scores
-        const avgData = selectedCities.map(city => {
+        // Average Mobility Solution Scores by City
+        const avgScores = selectedCities.map(city => {
             const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b, 0) / labels.length;
-            return { city: city.city, avg: avgScore };
+            return { city: city.city, avgScore };
         });
+
         const horizontalBarData = {
-            labels: avgData.map(d => d.city),
+            labels: avgScores.map(score => score.city),
             datasets: [{
                 label: 'Average Mobility Score',
-                data: avgData.map(d => d.avg),
+                data: avgScores.map(score => score.avgScore),
                 backgroundColor: 'rgba(75, 192, 192, 0.5)'
             }]
         };
 
         // Stacked Bar Chart for Mobility Solution Trends
-        const stackedBarData = {
+        const trendData = {
             labels: selectedCities.map(city => city.city),
             datasets: labels.map((solution, i) => ({
                 label: solution,
@@ -276,7 +277,7 @@
             }))
         };
 
-        // Pie Chart: Average Distribution of Solutions
+        // Pie Chart for Average Distribution of Solutions
         const avgDistribution = labels.map(solution =>
             selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution], 0) / selectedCities.length
         );
@@ -309,7 +310,7 @@
             type: 'bar',
             data: horizontalBarData,
             options: {
-                indexAxis: 'y', // Set the index axis to 'y' to make it horizontal
+                indexAxis: 'y',
                 responsive: true
             }
         });
@@ -317,8 +318,8 @@
         // Stacked Bar Chart for Mobility Solution Trends
         const stackedBarCtx = document.getElementById("line-chart").getContext("2d");
         window.stackedBarChart = new Chart(stackedBarCtx, {
-            type: 'bar', // Keep it as a bar chart, as it can be used for stacking
-            data: stackedBarData,
+            type: 'bar',
+            data: trendData,
             options: {
                 responsive: true,
                 scales: {
