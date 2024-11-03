@@ -104,21 +104,111 @@
             <h1>Smart City Mobility Solutions</h1>
         </div>
         <div class="navbar">
-            <a href="#" class="tab-link active-tab" onclick="openTab(event, 'histogram')">Istogrammi</a>
-            <a href="#" class="tab-link" onclick="openTab(event, 'comparison')">Comparison</a>
+            <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
+            <a href="#" class="tab-link" onclick="openTab(event, 'Cities In Numbers')">Cities In Numbers</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
             <a href="#" class="tab-link">Void</a>
         </div>
     </div>
 
-    <div id="histogram" class="tab-content active-content">
+    <div id="Histograms" class="tab-content active-content">
         <div id="city-data-container"></div>
         <button id="load-more">Load More</button>
     </div>
 
-    <div id="comparison" class="tab-content">
-        <p>This is the Comparison tab content. You can add specific comparison content here.</p>
+    
+    <div id="Cities In Numbers" class="tab-content">
+        <div id="Cities In Numbers" class="tab-content">
+    <div class="container">
+        <h2>Comparison Between Cities - Mobility Solutions</h2>
+        
+        <!-- Radar Chart per confronto generale -->
+        <h3>Global Comparison of Mobility Solutions</h3>
+        <canvas id="radarChart" width="400" height="400"></canvas>
+
+        <!-- Bar Chart per confronto dettagliato -->
+        <h3>Congestion Reduction by Mobility Solution</h3>
+        <canvas id="barChart" width="600" height="400"></canvas>
+    </div>
+</div>
+
+<script>
+    // Dati delle città per il confronto delle soluzioni di mobilità
+    const cityDataForComparison = [
+        {'city': 'Zurich', 'mobility_solutions': {'Car-sharing': 43.6, 'Parking Apps': 44.5, 'Bicycle hiring': 55.6, 'Scheduling': 79.7, 'Traffic Info': 61.8}},
+        {'city': 'Singapore', 'mobility_solutions': {'Car-sharing': 57.6, 'Parking Apps': 57.5, 'Bicycle hiring': 56.7, 'Scheduling': 63.2, 'Traffic Info': 75.7}},
+        {'city': 'Mexico City', 'mobility_solutions': {'Car-sharing': 42.6, 'Parking Apps': 43.0, 'Bicycle hiring': 52.8, 'Scheduling': 55.1, 'Traffic Info': 63.4}},
+        {'city': 'Rome', 'mobility_solutions': {'Car-sharing': 32.4, 'Parking Apps': 35.0, 'Bicycle hiring': 35.1, 'Scheduling': 57.1, 'Traffic Info': 44.5}},
+        {'city': 'Bogota', 'mobility_solutions': {'Car-sharing': 36.4, 'Parking Apps': 39.4, 'Bicycle hiring': 46.5, 'Scheduling': 48.8, 'Traffic Info': 58.7}}
+    ];
+
+    
+    const radarLabels = Object.keys(cityDataForComparison[0].mobility_solutions);
+    const radarData = {
+        labels: radarLabels,
+        datasets: cityDataForComparison.map(city => ({
+            label: city.city,
+            data: Object.values(city.mobility_solutions),
+            fill: true,
+            backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
+            borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+            borderWidth: 1
+        }))
+    };
+
+    const radarOptions = {
+        responsive: true,
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 100
+            }
+        },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: { enabled: true }
+        }
+    };
+
+    new Chart(document.getElementById('radarChart'), {
+        type: 'radar',
+        data: radarData,
+        options: radarOptions
+    });
+
+
+    const barData = {
+        labels: cityDataForComparison.map(city => city.city),
+        datasets: radarLabels.map((solution, index) => ({
+            label: solution,
+            data: cityDataForComparison.map(city => city.mobility_solutions[solution]),
+            backgroundColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 0.5)`,
+            borderColor: `rgba(${index * 50}, ${255 - index * 20}, ${index * 30}, 1)`,
+            borderWidth: 1
+        }))
+    };
+
+    const barOptions = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        },
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: { enabled: true }
+        }
+    };
+
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: barData,
+        options: barOptions
+    });
+</script>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
