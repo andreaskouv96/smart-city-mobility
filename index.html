@@ -155,15 +155,14 @@
 
     // Funzione per generare i checkbox per le città
     function initializeCitySelection() {
-            const citySelection = document.getElementById("city-selection");
-            citySelection.innerHTML = ''; // Pulizia contenuto precedente
+           const citySelection = document.getElementById("city-selection");
+    citySelection.innerHTML = ''; // Pulizia contenuto precedente
 
-             cityDataForComparison.forEach(city => {
-                const option = document.createElement("option");
-                option.value = city.city;
-                option.textContent = city.city;
-                citySelection.appendChild(option);
-            });    
+    cityDataForComparison.forEach(city => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}<br>`;
+        citySelection.appendChild(label);
+    });
         }
 
     // Funzione per aprire i tab e visualizzare i dati
