@@ -123,8 +123,23 @@
             <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
             <button id="reset-btn" class="action-btn">Reset Selection</button>
         </div>
+        
+        <!-- Radar Chart -->
+        <h3>Comparison of Mobility Solutions</h3>
         <div id="chart-container">
             <canvas id="comparison-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Bar Chart for Average Comparison -->
+        <h3>Average Mobility Solution Scores by City</h3>
+        <div id="bar-chart-container">
+            <canvas id="bar-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Doughnut Chart for Solution Distribution -->
+        <h3>Mobility Solution Distribution per City</h3>
+        <div id="doughnut-chart-container">
+            <canvas id="doughnut-chart" width="400" height="400"></canvas>
         </div>
     </div>
 </div>
@@ -132,62 +147,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="cityData_full_with_country_codes.js"></script>
 
-<style>
-    /* Basic styling for the UI components */
-    .comparison-container {
-        max-width: 600px;
-        margin: auto;
-        text-align: center;
-    }
-
-    .buttons-container {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .action-btn {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .action-btn:hover {
-        background-color: #45a049;
-    }
-
-    #chart-container {
-        margin-top: 20px;
-    }
-
-    label {
-        display: block;
-        font-size: 16px;
-        margin: 5px 0;
-    }
-</style>
-
 <script>
-    function openTab(event, tabName) {
-        const tabContents = document.getElementsByClassName("tab-content");
-        for (let content of tabContents) {
-            content.classList.remove("active-content");
-        }
-        const tabLinks = document.getElementsByClassName("tab-link");
-        for (let link of tabLinks) {
-            link.classList.remove("active-tab");
-        }
-        document.getElementById(tabName).classList.add("active-content");
-        event.currentTarget.classList.add("active-tab");
-    }
-
     function populateCityCheckboxes() {
         const container = document.getElementById("city-checkboxes");
-        container.innerHTML = ""; // Clear existing checkboxes
+        container.innerHTML = "";
         cityData.forEach((city, index) => {
             const label = document.createElement("label");
             label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
@@ -201,15 +164,10 @@
     }
 
     function displayComparisonChart(selectedCities) {
-        const labels = [
-            'Car-sharing Apps',
-            'Parking Apps',
-            'Bicycle Hiring',
-            'Online Scheduling',
-            'Traffic Info Apps'
-        ];
-
-        const datasets = selectedCities.map((city, index) => ({
+        const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
+        
+        // Radar chart data
+        const radarDatasets = selectedCities.map((city, index) => ({
             label: `${city.city}, ${city.country}`,
             data: Object.values(city.mobility_solutions),
             fill: true,
@@ -218,26 +176,60 @@
             borderWidth: 1
         }));
 
-        const ctx = document.getElementById("comparison-chart").getContext("2d");
-        
-        if (window.comparisonChart) {
-            window.comparisonChart.destroy(); // Destroy existing chart instance
-        }
+        // Bar chart data for average scores per city
+        const avgData = selectedCities.map(city => ({
+            label: city.city,
+            data: [Object.values(city.mobility_solutions).reduce((a, b) => a + b) / labels.length],
+            backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`,
+        }));
 
-        window.comparisonChart = new Chart(ctx, {
+        // Doughnut chart data for solution distribution per city
+        const doughnutData = {
+            labels: labels,
+            datasets: selectedCities.map((city, index) => ({
+                label: `${city.city}, ${city.country}`,
+                data: Object.values(city.mobility_solutions),
+                backgroundColor: labels.map(() => `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`),
+            }))
+        };
+
+        // Destroy previous charts if they exist
+        if (window.comparisonChart) window.comparisonChart.destroy();
+        if (window.barChart) window.barChart.destroy();
+        if (window.doughnutChart) window.doughnutChart.destroy();
+
+        // Radar chart
+        const radarCtx = document.getElementById("comparison-chart").getContext("2d");
+        window.comparisonChart = new Chart(radarCtx, {
             type: "radar",
-            data: {
-                labels: labels,
-                datasets: datasets
-            },
+            data: { labels: labels, datasets: radarDatasets },
             options: {
                 responsive: true,
-                scales: {
-                    r: {
-                        beginAtZero: true,
-                        max: 100
-                    }
-                }
+                scales: { r: { beginAtZero: true, max: 100 }},
+                plugins: { legend: { position: "top" }}
+            }
+        });
+
+        // Bar chart
+        const barCtx = document.getElementById("bar-chart").getContext("2d");
+        window.barChart = new Chart(barCtx, {
+            type: "bar",
+            data: { labels: selectedCities.map(city => city.city), datasets: avgData },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, max: 100 }},
+                plugins: { legend: { display: false }}
+            }
+        });
+
+        // Doughnut chart
+        const doughnutCtx = document.getElementById("doughnut-chart").getContext("2d");
+        window.doughnutChart = new Chart(doughnutCtx, {
+            type: "doughnut",
+            data: doughnutData,
+            options: {
+                responsive: true,
+                plugins: { legend: { position: "top" }},
             }
         });
     }
@@ -253,15 +245,16 @@
 
     document.getElementById("reset-btn").addEventListener("click", () => {
         document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
-        if (window.comparisonChart) {
-            window.comparisonChart.destroy();
-        }
+        if (window.comparisonChart) window.comparisonChart.destroy();
+        if (window.barChart) window.barChart.destroy();
+        if (window.doughnutChart) window.doughnutChart.destroy();
     });
 
     window.onload = function() {
         populateCityCheckboxes();
     };
 </script>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
