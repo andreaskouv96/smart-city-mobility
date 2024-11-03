@@ -137,8 +137,14 @@
             <canvas id="bar-chart" width="400" height="400"></canvas>
         </div>
 
-        <!-- Line Chart for Mobility Trends -->
-        <h3>Mobility Solution Trends Across Cities</h3>
+        <!-- Clustered Bar Chart for Mobility Solutions Across Cities -->
+        <h3>Mobility Solutions Comparison Across Cities</h3>
+        <div id="clustered-bar-chart-container">
+            <canvas id="clustered-bar-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Line Chart for Overall Mobility Scores -->
+        <h3>Overall Mobility Scores Across Selected Cities</h3>
         <div id="line-chart-container">
             <canvas id="line-chart" width="400" height="400"></canvas>
         </div>
@@ -267,13 +273,15 @@
             }]
         };
 
-        // Stacked Bar Chart for Mobility Solution Trends
-        const trendData = {
-            labels: selectedCities.map(city => city.city),
-            datasets: labels.map((solution, i) => ({
-                label: solution,
-                data: selectedCities.map(city => city.mobility_solutions[solution]),
-                backgroundColor: `rgba(${i * 50}, ${100 + i * 50}, ${150 - i * 30}, 0.5)`
+        // Clustered Bar Chart for Mobility Solutions Across Cities
+        const clusteredBarData = {
+            labels: labels,
+            datasets: selectedCities.map((city, index) => ({
+                label: `${city.city}, ${city.country}`,
+                data: Object.values(city.mobility_solutions),
+                backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.5)`,
+                borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
+                borderWidth: 1
             }))
         };
 
@@ -293,7 +301,7 @@
         // Destroy previous charts if they exist
         if (window.comparisonChart) window.comparisonChart.destroy();
         if (window.horizontalBarChart) window.horizontalBarChart.destroy();
-        if (window.stackedBarChart) window.stackedBarChart.destroy();
+        if (window.clusteredBarChart) window.clusteredBarChart.destroy();
         if (window.pieChart) window.pieChart.destroy();
 
         // Radar Chart
@@ -315,19 +323,19 @@
             }
         });
 
-        // Stacked Bar Chart for Mobility Solution Trends
-        const stackedBarCtx = document.getElementById("line-chart").getContext("2d");
-        window.stackedBarChart = new Chart(stackedBarCtx, {
+        // Clustered Bar Chart for Mobility Solutions Across Cities
+        const clusteredBarCtx = document.getElementById("clustered-bar-chart").getContext("2d");
+        window.clusteredBarChart = new Chart(clusteredBarCtx, {
             type: 'bar',
-            data: trendData,
+            data: clusteredBarData,
             options: {
                 responsive: true,
                 scales: {
                     x: {
-                        stacked: true
+                        stacked: false
                     },
                     y: {
-                        stacked: true
+                        stacked: false
                     }
                 }
             }
@@ -355,15 +363,12 @@
         document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
         if (window.comparisonChart) window.comparisonChart.destroy();
         if (window.horizontalBarChart) window.horizontalBarChart.destroy();
-        if (window.stackedBarChart) window.stackedBarChart.destroy();
+        if (window.clusteredBarChart) window.clusteredBarChart.destroy();
         if (window.pieChart) window.pieChart.destroy();
     });
 
     window.onload = populateCityCheckboxes;
 </script>
-
-
-
 
 
     </div>
