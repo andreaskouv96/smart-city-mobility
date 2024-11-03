@@ -123,8 +123,6 @@
         <h2>Comparison Between Cities - Mobility Solutions</h2>
         <h3>Select Cities to Compare:</h3>
         <div id="city-selection"></div>
-             <form id="city-form">
-               </form>
         <button onclick="updateCharts()">Update Charts</button>
         
         <!-- Grafici -->
@@ -143,7 +141,7 @@
     // Funzione per caricare i dati dal file JSON
     async function loadCityData() {
         try {
-            const response = await fetch('cityData_full_with_country_codes.js'); // Sostituisci con il percorso corretto
+            const response = await fetch('cityData_full_with_country_codes.json'); // Sostituisci con il percorso corretto
             if (!response.ok) throw new Error("Errore nel caricamento dei dati");
             
             cityDataForComparison = await response.json();
@@ -156,18 +154,15 @@
 
     // Funzione per generare i checkbox per le città
     function initializeCitySelection() {
-        const citySelection = document.getElementById("city-selection");
-        const form = document.createElement("form");
-        form.id = "city-form";
-        
-        cityDataForComparison.forEach(city => {
-            const label = document.createElement("label");
-            label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}`;
-            form.appendChild(label);
-        });
+            const citySelection = document.getElementById("city-selection");
+            citySelection.innerHTML = ''; // Pulizia contenuto precedente
 
-        citySelection.insertBefore(form, citySelection.firstChild);
-    }
+            cityDataForComparison.forEach(city => {
+                const label = document.createElement("label");
+                label.innerHTML = `<input type="checkbox" name="city" value="${city.city}"> ${city.city}<br>`;
+                citySelection.appendChild(label);
+            });
+        }
 
     // Funzione per aprire i tab e visualizzare i dati
     function openTab(event, tabName) {
