@@ -58,26 +58,42 @@
         .tab-content.active-content {
             display: block;
         }
-        .buttons-container {
+        .city-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            align-items: flex-start;
+            background-color: #f9f9f9;
         }
-        .action-btn {
+        .city-info {
+            flex: 1;
+            padding-right: 20px;
+            text-align: left;
+        }
+        .city-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+        .city-info div {
+            margin-bottom: 12px;
+        }
+        .chart-container {
+            width: 400px;
+            height: 300px;
+        }
+        #load-more {
             padding: 10px 20px;
-            background-color: #4CAF50;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #00b0ff;
             color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .action-btn:hover {
-            background-color: #45a049;
-        }
-        #chart-container, #bar-chart-container, #clustered-bar-chart-container {
             margin-top: 20px;
+        }
+        #load-more:hover {
+            background-color: #007bbf;
         }
     </style>
 </head>
@@ -99,50 +115,275 @@
         <button id="load-more">Load More</button>
     </div>
 
-    <div id="Cities-Comparison" class="tab-content">
-        <div class="comparison-container">
-            <h2>Select Cities for Comparison</h2>
-            <div id="city-checkboxes" class="city-selection"></div>
+    
+<div id="Cities-Comparison" class="tab-content">
+    <div class="comparison-container">
+        <h2>Select Cities for Comparison</h2>
+        <div id="city-checkboxes" class="city-selection"></div>
 
-            <div class="buttons-container">
-                <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
-                <button id="reset-btn" class="action-btn">Reset Selection</button>
-            </div>
+ <div id="Smart-Suggestions" class="tab-content">
+    <h2>Find Similar Cities</h2>
+    <form id="cityComparisonForm">
+        <label for="traffic">Traffic Congestion (%):</label>
+        <input type="number" id="traffic" name="traffic" placeholder="Enter % (e.g., 40)" required>
 
-            <h3>Breakdown of Mobility Solutions by City</h3>
-            <div id="chart-container">
-                <canvas id="comparison-chart" width="400" height="400"></canvas>
-            </div>
+        <label for="transport">Public Transport Satisfaction (%):</label>
+        <input type="number" id="transport" name="transport" placeholder="Enter % (e.g., 50)" required>
 
-            <h3>Average Mobility Solution Scores by City</h3>
-            <div id="bar-chart-container">
-                <canvas id="bar-chart" width="400" height="400"></canvas>
-            </div>
+        <button type="submit">Find Similar City</button>
+    </form>
 
-            <h3>Mobility Solutions Comparison Across Cities</h3>
-            <div id="clustered-bar-chart-container">
-                <canvas id="clustered-bar-chart" width="400" height="400"></canvas>
-            </div>
+    <div id="results"></div>
+</div>
+       
+
+        <div class="buttons-container">
+            <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
+            <button id="reset-btn" class="action-btn">Reset Selection</button>
         </div>
+
+        <!-- Radar Chart -->
+        <h3>Breakdown of Mobility Solutions by City</h3>
+        <div id="chart-container">
+            <canvas id="comparison-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Bar Chart for Average Comparison -->
+        <h3>Average Mobility Solution Scores by City</h3>
+        <div id="bar-chart-container">
+            <canvas id="bar-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Clustered Bar Chart for Mobility Solutions Across Cities -->
+        <h3>Mobility Solutions Comparison Across Cities</h3>
+        <div id="clustered-bar-chart-container">
+            <canvas id="clustered-bar-chart" width="400" height="400"></canvas>
+        </div>
+
+       
     </div>
+</div>
 
-    <div id="Smart-Suggestions" class="tab-content">
-        <h2>Find Similar Cities</h2>
-        <form id="cityComparisonForm">
-            <label for="traffic">Traffic Congestion (%):</label>
-            <input type="number" id="traffic" name="traffic" placeholder="Enter % (e.g., 40)" required>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="cityData_full_with_country_codes.js"></script>
 
-            <label for="transport">Public Transport Satisfaction (%):</label>
-            <input type="number" id="transport" name="transport" placeholder="Enter % (e.g., 50)" required>
+<style>
+    .comparison-container {
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+    }
 
-            <button type="submit">Find Similar City</button>
-        </form>
+    .buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
 
-        <div id="results"></div>
+    .action-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .action-btn:hover {
+        background-color: #45a049;
+    }
+
+    #chart-container {
+        margin-top: 20px;
+    }
+
+    /* Styling for the city selection */
+    .city-selection {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    .city-selection label {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .city-selection input[type="checkbox"] {
+        accent-color: #4CAF50;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .comparison-container {
+            padding: 10px;
+        }
+
+        .buttons-container {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .city-selection {
+            max-width: 100%;
+        }
+    }
+</style>
+
+<script>
+    function populateCityCheckboxes() {
+        const container = document.getElementById("city-checkboxes");
+        container.innerHTML = "";
+        cityData.forEach((city, index) => {
+            const label = document.createElement("label");
+            label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
+            container.appendChild(label);
+        });
+    }
+
+    function getSelectedCities() {
+        const checkboxes = document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked");
+        return Array.from(checkboxes).map(checkbox => cityData[checkbox.value]);
+    }
+
+    function displayCharts(selectedCities) {
+        const labels = ['Car-sharing Apps', 'Parking Apps', 'Bicycle Hiring', 'Online Scheduling', 'Traffic Info Apps'];
+
+        // Radar Chart: Mobility solutions by city
+        const radarData = selectedCities.map((city, index) => ({
+            label: `${city.city}, ${city.country}`,
+            data: Object.values(city.mobility_solutions),
+            backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`,
+            borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
+            borderWidth: 1
+        }));
+
+        // Average Mobility Solution Scores by City
+        const avgScores = selectedCities.map(city => {
+            const avgScore = Object.values(city.mobility_solutions).reduce((a, b) => a + b, 0) / labels.length;
+            return { city: city.city, avgScore };
+        });
+
+        const horizontalBarData = {
+            labels: avgScores.map(score => score.city),
+            datasets: [{
+                label: 'Average Mobility Score',
+                data: avgScores.map(score => score.avgScore),
+                backgroundColor: 'rgba(75, 192, 192, 0.5)'
+            }]
+        };
+
+        // Clustered Bar Chart for Mobility Solutions Across Cities
+        const clusteredBarData = {
+            labels: labels,
+            datasets: selectedCities.map((city, index) => ({
+                label: `${city.city}, ${city.country}`,
+                data: Object.values(city.mobility_solutions),
+                backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.5)`,
+                borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
+                borderWidth: 1
+            }))
+        };
+
+        // Pie Chart for Average Distribution of Solutions
+        const avgDistribution = labels.map(solution =>
+            selectedCities.reduce((sum, city) => sum + city.mobility_solutions[solution], 0) / selectedCities.length
+        );
+        const pieData = {
+            labels: labels,
+            datasets: [{
+                label: 'Average Distribution',
+                data: avgDistribution,
+                backgroundColor: labels.map((_, i) => `rgba(${i * 50}, ${100 + i * 40}, ${150 - i * 20}, 0.5)`)
+            }]
+        };
+
+        // Destroy previous charts if they exist
+        if (window.comparisonChart) window.comparisonChart.destroy();
+        if (window.horizontalBarChart) window.horizontalBarChart.destroy();
+        if (window.clusteredBarChart) window.clusteredBarChart.destroy();
+        if (window.pieChart) window.pieChart.destroy();
+
+        // Radar Chart
+        const radarCtx = document.getElementById("comparison-chart").getContext("2d");
+        window.comparisonChart = new Chart(radarCtx, {
+            type: "radar",
+            data: { labels, datasets: radarData },
+            options: { responsive: true }
+        });
+
+        // Horizontal Bar Chart for Average Mobility Solution Scores
+        const horizontalBarCtx = document.getElementById("bar-chart").getContext("2d");
+        window.horizontalBarChart = new Chart(horizontalBarCtx, {
+            type: 'bar',
+            data: horizontalBarData,
+            options: {
+                indexAxis: 'y',
+                responsive: true
+            }
+        });
+
+        // Clustered Bar Chart for Mobility Solutions Across Cities
+        const clusteredBarCtx = document.getElementById("clustered-bar-chart").getContext("2d");
+        window.clusteredBarChart = new Chart(clusteredBarCtx, {
+            type: 'bar',
+            data: clusteredBarData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: false
+                    },
+                    y: {
+                        stacked: false
+                    }
+                }
+            }
+        });
+
+        // Pie Chart
+        const pieCtx = document.getElementById("pie-chart").getContext("2d");
+        window.pieChart = new Chart(pieCtx, {
+            type: "pie",
+            data: pieData,
+            options: { responsive: true }
+        });
+    }
+
+    document.getElementById("compare-btn").addEventListener("click", () => {
+        const selectedCities = getSelectedCities();
+        if (selectedCities.length > 0) {
+            displayCharts(selectedCities);
+        } else {
+            alert("Please select at least one city to compare.");
+        }
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+        document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
+        if (window.comparisonChart) window.comparisonChart.destroy();
+        if (window.horizontalBarChart) window.horizontalBarChart.destroy();
+        if (window.clusteredBarChart) window.clusteredBarChart.destroy();
+        if (window.pieChart) window.pieChart.destroy();
+    });
+
+    window.onload = populateCityCheckboxes;
+</script>
+
+
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="cityData_full_with_country_codes.js"></script>
+
     <script>
         function openTab(event, tabName) {
             const tabContents = document.getElementsByClassName("tab-content");
@@ -157,65 +398,149 @@
             event.currentTarget.classList.add("active-tab");
         }
 
-        document.getElementById('cityComparisonForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const traffic = parseFloat(document.getElementById('traffic').value);
-            const transport = parseFloat(document.getElementById('transport').value);
+        let displayedCities = 0;
+        const citiesPerPage = 5;
 
-            const newCity = {
-                traffic_congestion_not_a_problem: traffic,
-                public_transport_satisfactory: transport,
-            };
+        function displayCityData() {
+            const container = document.getElementById('city-data-container');
+            const end = Math.min(displayedCities + citiesPerPage, cityData.length);
 
-            const similarCities = calculateSimilarity(newCity, cityData);
-            const mostSimilar = similarCities[0];
+            for (let i = displayedCities; i < end; i++) {
+                const city = cityData[i];
+                const cityDiv = document.createElement('div');
+                cityDiv.className = 'city-container';
 
-            document.getElementById('results').innerHTML =
-                `<p>The most similar city is <strong>${mostSimilar.city}</strong>.</p>
-                <p>You can adopt similar strategies to improve mobility!</p>`;
-        });
+                const cityInfoDiv = document.createElement('div');
+                cityInfoDiv.className = 'city-info';
 
-        function calculateSimilarity(newCity, cityData) {
-            return cityData
-                .map(city => {
-                    const distance = Math.sqrt(
-                        Math.pow(city.traffic_congestion_not_a_problem - newCity.traffic_congestion_not_a_problem, 2) +
-                        Math.pow(city.public_transport_satisfactory - newCity.public_transport_satisfactory, 2)
-                    );
-                    return { city: city.city, distance };
-                })
-                .sort((a, b) => a.distance - b.distance);
+                const cityTitle = document.createElement('div');
+                cityTitle.className = 'city-title';
+
+                if (city.country_code) {
+                    const flagImg = document.createElement('img');
+                    flagImg.src = `https://flagpedia.net/data/flags/h80/${city.country_code.toLowerCase()}.png`;
+                    flagImg.alt = `${city.country} flag`;
+                    flagImg.style.width = '20px';
+                    flagImg.style.marginRight = '8px';
+                    cityTitle.appendChild(flagImg);
+                }
+
+                cityTitle.appendChild(document.createTextNode(`${city.city}, ${city.country}`));
+                cityInfoDiv.appendChild(cityTitle);
+
+                const createdAt = document.createElement('div');
+                createdAt.textContent = `Data Created At: ${city.created_at || 'N/A'}`;
+                cityInfoDiv.appendChild(createdAt);
+
+                const mobilitySolutionsTitle = document.createElement('div');
+                mobilitySolutionsTitle.textContent = 'Mobility Solutions:';
+                cityInfoDiv.appendChild(mobilitySolutionsTitle);
+
+                const mobilitySolutions = document.createElement('ul');
+                for (const [solution, value] of Object.entries(city.mobility_solutions)) {
+                    const solutionItem = document.createElement('li');
+                    solutionItem.textContent = `${solution}: ${value}%`;
+                    mobilitySolutions.appendChild(solutionItem);
+                }
+                cityInfoDiv.appendChild(mobilitySolutions);
+
+                const trafficCongestion = document.createElement('div');
+                trafficCongestion.textContent = `Traffic Congestion Not a Problem: ${city.traffic_congestion_not_a_problem}%`;
+                cityInfoDiv.appendChild(trafficCongestion);
+
+                const publicTransport = document.createElement('div');
+                publicTransport.textContent = `Public Transport Satisfactory: ${city.public_transport_satisfactory}%`;
+                cityInfoDiv.appendChild(publicTransport);
+
+                const smartCityRanking = document.createElement('div');
+                smartCityRanking.textContent = `Smart City Ranking: ${city.smart_city_ranking}`;
+                cityInfoDiv.appendChild(smartCityRanking);
+
+                cityDiv.appendChild(cityInfoDiv);
+
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                const chartCanvas = document.createElement('canvas');
+                chartCanvas.id = `chart-${i}`;
+                chartContainer.appendChild(chartCanvas);
+                cityDiv.appendChild(chartContainer);
+
+                container.appendChild(cityDiv);
+
+                createHistogram(chartCanvas.id, city.mobility_solutions);
+            }
+
+            displayedCities += citiesPerPage;
+            if (displayedCities >= cityData.length) {
+                document.getElementById('load-more').style.display = 'none';
+            }
         }
 
-        function populateCityCheckboxes() {
-            const container = document.getElementById("city-checkboxes");
-            container.innerHTML = "";
-            cityData.forEach((city, index) => {
-                const label = document.createElement("label");
-                label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
-                container.appendChild(label);
+        function createHistogram(canvasId, mobilitySolutions) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Car-sharing\nApps',
+                        'Parking Apps',
+                        'Bicycle\nHiring',
+                        'Online\nScheduling',
+                        'Traffic Info\nApps'
+                    ],
+                    datasets: [{
+                        label: 'Impact (%)',
+                        data: Object.values(mobilitySolutions),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    size: 10
+                                }
+                           
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
             });
         }
 
-        document.getElementById("compare-btn").addEventListener("click", () => {
-            const selectedCities = Array.from(document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked"))
-                .map(checkbox => cityData[checkbox.value]);
-            if (selectedCities.length > 0) {
-                displayCharts(selectedCities);
-            } else {
-                alert("Please select at least one city to compare.");
-            }
-        });
+        document.getElementById('load-more').addEventListener('click', displayCityData);
 
-        document.getElementById("reset-btn").addEventListener("click", () => {
-            document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
-        });
-
-        function displayCharts(selectedCities) {
-            // Chart display logic here
-        }
-
-        window.onload = populateCityCheckboxes;
+        displayCityData();
     </script>
 </body>
 </html>
+
+                               
