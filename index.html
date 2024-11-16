@@ -125,29 +125,6 @@
             <button id="reset-btn" class="action-btn">Reset Selection</button>
         </div>
 
-    
-    </div>
-</div>
-
-<div id="Smart-Suggestions" class="tab-content">
-    <h2>Find Similar Cities</h2>
-    <form id="cityComparisonForm">
-        <label for="traffic">Traffic Congestion (%):</label>
-        <input type="number" id="traffic" name="traffic" placeholder="Enter % (e.g., 40)" required>
-
-        <label for="transport">Public Transport Satisfaction (%):</label>
-        <input type="number" id="transport" name="transport" placeholder="Enter % (e.g., 50)" required>
-
-        <button type="submit">Find Similar City</button>
-    </form>
-
-    <div id="results"></div>
-</div>
-
-       
-
-      
-
         <!-- Radar Chart -->
         <h3>Breakdown of Mobility Solutions by City</h3>
         <div id="chart-container">
@@ -165,10 +142,25 @@
         <div id="clustered-bar-chart-container">
             <canvas id="clustered-bar-chart" width="400" height="400"></canvas>
         </div>
-
-       
     </div>
 </div>
+
+
+<div id="Smart-Suggestions" class="tab-content">
+    <h2>Find Similar Cities</h2>
+    <form id="cityComparisonForm">
+        <label for="traffic">Traffic Congestion (%):</label>
+        <input type="number" id="traffic" name="traffic" placeholder="Enter % (e.g., 40)" required>
+
+        <label for="transport">Public Transport Satisfaction (%):</label>
+        <input type="number" id="transport" name="transport" placeholder="Enter % (e.g., 50)" required>
+
+        <button type="submit">Find Similar City</button>
+    </form>
+
+    <div id="results"></div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="cityData_full_with_country_codes.js"></script>
