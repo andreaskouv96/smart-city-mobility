@@ -544,8 +544,35 @@
         document.getElementById('load-more').addEventListener('click', displayCityData);
 
         displayCityData();
-    </script>
+<script>
+    function populateCityCheckboxes() {
+        const container = document.getElementById("city-checkboxes");
+        container.innerHTML = "";
+        cityData.forEach((city, index) => {
+            const label = document.createElement("label");
+            label.innerHTML = `<input type="checkbox" value="${index}"> ${city.city}, ${city.country}`;
+            container.appendChild(label);
+        });
+    }
+
+    document.getElementById("compare-btn").addEventListener("click", () => {
+        const selectedCities = Array.from(document.querySelectorAll("#city-checkboxes input[type=checkbox]:checked"))
+            .map(checkbox => cityData[checkbox.value]);
+        if (selectedCities.length > 0) {
+            displayCharts(selectedCities);
+        } else {
+            alert("Please select at least one city to compare.");
+        }
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+        document.querySelectorAll("#city-checkboxes input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
+    });
+
+    window.onload = populateCityCheckboxes;
+</script>
 </body>
 </html>
+
 
                                
