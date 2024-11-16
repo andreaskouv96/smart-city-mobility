@@ -121,6 +121,22 @@
         <h2>Select Cities for Comparison</h2>
         <div id="city-checkboxes" class="city-selection"></div>
 
+ <div id="Smart-Suggestions" class="tab-content">
+    <h2>Find Similar Cities</h2>
+    <form id="cityComparisonForm">
+        <label for="traffic">Traffic Congestion (%):</label>
+        <input type="number" id="traffic" name="traffic" placeholder="Enter % (e.g., 40)" required>
+
+        <label for="transport">Public Transport Satisfaction (%):</label>
+        <input type="number" id="transport" name="transport" placeholder="Enter % (e.g., 50)" required>
+
+        <button type="submit">Find Similar City</button>
+    </form>
+
+    <div id="results"></div>
+</div>
+       
+
         <div class="buttons-container">
             <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
             <button id="reset-btn" class="action-btn">Reset Selection</button>
