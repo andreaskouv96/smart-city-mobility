@@ -111,17 +111,41 @@
     </div>
 
     <div id="Histograms" class="tab-content active-content">
-        <div id="city-data-container"></div>
-        <button id="load-more">Load More</button>
-    </div>
+    <div id="city-data-container"></div>
+    <button id="load-more">Load More</button>
+</div>
 
-    
 <div id="Cities-Comparison" class="tab-content">
     <div class="comparison-container">
         <h2>Select Cities for Comparison</h2>
         <div id="city-checkboxes" class="city-selection"></div>
 
- <div id="Smart-Suggestions" class="tab-content">
+        <div class="buttons-container">
+            <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
+            <button id="reset-btn" class="action-btn">Reset Selection</button>
+        </div>
+
+        <!-- Radar Chart -->
+        <h3>Breakdown of Mobility Solutions by City</h3>
+        <div id="chart-container">
+            <canvas id="comparison-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Bar Chart for Average Comparison -->
+        <h3>Average Mobility Solution Scores by City</h3>
+        <div id="bar-chart-container">
+            <canvas id="bar-chart" width="400" height="400"></canvas>
+        </div>
+
+        <!-- Clustered Bar Chart for Mobility Solutions Across Cities -->
+        <h3>Mobility Solutions Comparison Across Cities</h3>
+        <div id="clustered-bar-chart-container">
+            <canvas id="clustered-bar-chart" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="Smart-Suggestions" class="tab-content">
     <h2>Find Similar Cities</h2>
     <form id="cityComparisonForm">
         <label for="traffic">Traffic Congestion (%):</label>
@@ -134,6 +158,8 @@
     </form>
 
     <div id="results"></div>
+</div>
+
 </div>
        
 
