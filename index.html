@@ -99,29 +99,40 @@
 </head>
 <body>
     <div class="sticky-header">
-        <div class="header-title">
-            <img src="logo.png" alt="Company Logo" class="logo">
-            <h1>Smart City Mobility Solutions</h1>
-        </div>
-        <div class="navbar">
-            <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
-            <a href="#" class="tab-link" onclick="openTab(event, 'Cities-Comparison')">Cities-Comparison</a>
-            <a href="#" class="tab-link" onclick="openTab(event, 'Smart-Suggestions')">Smart Suggestions</a>
-        </div>
+    <div class="header-title">
+        <img src="logo.png" alt="Company Logo" class="logo">
+        <h1>Smart City Mobility Solutions</h1>
     </div>
-
-    <div id="Histograms" class="tab-content active-content">
-        <div id="city-data-container"></div>
-        <button id="load-more">Load More</button>
+    <div class="navbar">
+        <a href="#" class="tab-link active-tab" onclick="openTab(event, 'Histograms')">Histograms</a>
+        <a href="#" class="tab-link" onclick="openTab(event, 'Cities-Comparison')">Cities-Comparison</a>
+        <a href="#" class="tab-link" onclick="openTab(event, 'Smart-Suggestions')">Smart Suggestions</a>
     </div>
+</div>
 
-    
+<div id="Histograms" class="tab-content active-content">
+    <div id="city-data-container"></div>
+    <button id="load-more">Load More</button>
+</div>
+
 <div id="Cities-Comparison" class="tab-content">
     <div class="comparison-container">
         <h2>Select Cities for Comparison</h2>
         <div id="city-checkboxes" class="city-selection"></div>
 
- <div id="Smart-Suggestions" class="tab-content">
+        <div class="buttons-container">
+            <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
+            <button id="reset-btn" class="action-btn">Reset Selection</button>
+        </div>
+
+        <h3>Breakdown of Mobility Solutions by City</h3>
+        <div id="chart-container">
+            <canvas id="comparison-chart" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="Smart-Suggestions" class="tab-content">
     <h2>Find Similar Cities</h2>
     <form id="cityComparisonForm">
         <label for="traffic">Traffic Congestion (%):</label>
@@ -135,12 +146,10 @@
 
     <div id="results"></div>
 </div>
+
        
 
-        <div class="buttons-container">
-            <button id="compare-btn" class="action-btn">Compare Selected Cities</button>
-            <button id="reset-btn" class="action-btn">Reset Selection</button>
-        </div>
+      
 
         <!-- Radar Chart -->
         <h3>Breakdown of Mobility Solutions by City</h3>
