@@ -13,7 +13,7 @@ document.getElementById('cityComparisonForm').addEventListener('submit', functio
     // Υπολογισμός ομοιότητας
     const similarCities = calculateSimilarity(newCity, cityData);
 
- // Εμφάνιση αποτελέσματος
+   // Εμφάνιση αποτελέσματος
     const mostSimilar = similarCities[0];
     document.getElementById('results').innerHTML = 
         <p>The most similar city is <strong>${mostSimilar.city}</strong>.</p>
