@@ -28,7 +28,7 @@ function calculateSimilarity(newCity, cityData) {
                 Math.pow(city.traffic_congestion_not_a_problem - newCity.traffic_congestion_not_a_problem, 2) +
                 Math.pow(city.public_transport_satisfactory - newCity.public_transport_satisfactory, 2)
             );
-            return { city: city.city, distance };
+            return { city: city.city, country: city.country, distance };
         })
         .sort((a, b) => a.distance - b.distance); // Ταξινόμηση κατά ομοιότητα
 }
