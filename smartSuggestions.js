@@ -15,9 +15,10 @@ document.getElementById('cityComparisonForm').addEventListener('submit', functio
 
    // Εμφάνιση αποτελέσματος
     const mostSimilar = similarCities[0];
-    document.getElementById('results').innerHTML = 
-        <p>The most similar city is <strong>${mostSimilar.city}</strong>.</p>
-        <p>You can adopt similar strategies to improve mobility!</p>;
+    document.getElementById('results').innerHTML = `
+    <p>The most similar city is <strong>${mostSimilar.city}</strong>, located in <strong>${mostSimilar.country}</strong>.</p>
+    <p>You can adopt similar strategies to improve mobility!</p>`;
+
 
 });
 
