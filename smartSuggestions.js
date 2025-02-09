@@ -16,7 +16,7 @@ document.getElementById('cityComparisonForm').addEventListener('submit', functio
    // Εμφάνιση αποτελέσματος
     const mostSimilar = similarCities[0];
     document.getElementById('results').innerHTML = `
-    <p>The most similar city is <strong>${mostSimilar.city}</strong>, located in <strong>${mostSimilar.country}</strong>.</p>
+    <p>The most similar city is <strong>${mostSimilar.city}</strong>, located in <strong>${mostSimilar.country}</strong> and has SCR <strong>${mostSimilar.smart_city_ranking}</strong>.</p>
     <p>You can adopt similar strategies to improve mobility!</p>`;
 
 
@@ -30,7 +30,7 @@ function calculateSimilarity(newCity, cityData) {
                 Math.pow(city.traffic_congestion_not_a_problem - newCity.traffic_congestion_not_a_problem, 2) +
                 Math.pow(city.public_transport_satisfactory - newCity.public_transport_satisfactory, 2)
             );
-            return { city: city.city, country: city.country, distance };
+            return { city: city.city, country: city.country, smart_city_ranking: city.smart_city_ranking, distance };
         })
         .sort((a, b) => a.distance - b.distance); // Ταξινόμηση κατά ομοιότητα
 }
