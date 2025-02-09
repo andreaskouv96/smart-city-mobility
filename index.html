@@ -40,6 +40,27 @@
 #install-button:hover {
     background-color: #007bbf;
 }
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+}
 
         .header-title {
             display: flex;
@@ -136,6 +157,9 @@
     </div>
 </div>
 
+<div id="toast-notification" class="toast">
+    ✅ The app is already installed on your device.
+</div>
 
 <div id="Histograms" class="tab-content active-content">
     <div id="city-data-container"></div>
@@ -500,6 +524,21 @@
                 document.getElementById('load-more').style.display = 'none';
             }
         }
+function showToast(message) {
+    const toast = document.getElementById("toast-notification");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000); // Εξαφανίζεται μετά από 3 δευτερόλεπτα
+}
+
+window.addEventListener("load", () => {
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        showToast("✅ The app is already installed on your device.");
+    }
+});
 
         function createHistogram(canvasId, mobilitySolutions) {
             const ctx = document.getElementById(canvasId).getContext('2d');
