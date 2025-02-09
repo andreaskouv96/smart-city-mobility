@@ -612,17 +612,19 @@ window.addEventListener("load", () => {
       .catch((err) => console.log("Service Worker Failed", err));
   }
 </script>
-    <script>
+  <script>
     let deferredPrompt;
 
     window.addEventListener("beforeinstallprompt", (event) => {
         event.preventDefault();
         deferredPrompt = event;
+    });
 
-        const installButton = document.getElementById("install-button");
-        installButton.style.display = "block";
-
-        installButton.addEventListener("click", () => {
+    document.getElementById("install-button").addEventListener("click", () => {
+        // Ελέγχει αν η PWA είναι ήδη εγκατεστημένη
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            alert("The app is already installed!");
+        } else if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === "accepted") {
@@ -632,7 +634,9 @@ window.addEventListener("load", () => {
                 }
                 deferredPrompt = null;
             });
-        });
+        } else {
+            alert("Installation is not supported in your browser.");
+        }
     });
 </script>
 
