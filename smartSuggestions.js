@@ -20,7 +20,7 @@ function getDynamicMessage(city) {
     let satisfaction = city.public_transport_satisfactory;
     let scr = city.smart_city_ranking; // SCR βαθμός
     
-    if ((traffic >= 70 && satisfaction >= 70) || scr === "A" || scr === "B") {
+    if ((traffic >= 70 && satisfaction >= 70) || ["A", "B", "AA", "AAA"].includes(scr)) {
         return `The city of <strong>${city.city}</strong> is a leader in smart mobility! You can learn from its best practices.`;
     } else if (traffic >= 30 && traffic < 70 && satisfaction >= 30 && satisfaction < 70) {
         return `The city of <strong>${city.city}</strong> has adopted some smart mobility strategies, but there’s room for improvement.`;
