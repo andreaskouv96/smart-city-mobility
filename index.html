@@ -648,7 +648,27 @@ window.addEventListener("load", () => {
         }
     });
 </script>
+    
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".tab-link").forEach(button => {
+        button.addEventListener("click", function() {
+            if (this.textContent.trim() === "Histograms") {
+                document.getElementById("data-explanation").style.display = "block";
+            } else {
+                document.getElementById("data-explanation").style.display = "none";
+            }
+        });
+    });
 
+    // Αν η σελίδα ανοίξει και είναι ήδη ενεργή η καρτέλα "Histograms"
+    if (document.querySelector(".tab-link.active-tab")?.textContent.trim() === "Histograms") {
+        document.getElementById("data-explanation").style.display = "block";
+    }
+});
+</script>
+
+    
 </body>
 </html>
 
