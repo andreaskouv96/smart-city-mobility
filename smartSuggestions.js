@@ -16,17 +16,18 @@ document.getElementById('cityComparisonForm').addEventListener('submit', functio
    // Εμφάνιση αποτελέσματος
     const mostSimilar = similarCities[0];
 function getDynamicMessage(city) {
-    let traffic = city.traffic_congestion_not_a_problem;
-    let satisfaction = city.public_transport_satisfactory;
+    let traffic = city.traffic_congestion_not_a_problem; // Όσο πιο μεγάλο, τόσο καλύτερα
+    let satisfaction = city.public_transport_satisfactory; // Όσο πιο μεγάλο, τόσο καλύτερα
     
-    if (traffic < 30 && satisfaction > 70) {
+    if (traffic > 70 && satisfaction > 70) {
         return `The city of <strong>${city.city}</strong> is a leader in smart mobility! You can learn from its best practices.`;
-    } else if (traffic >= 30 && traffic <= 60 && satisfaction >= 30 && satisfaction <= 70) {
+    } else if (traffic >= 30 && traffic <= 70 && satisfaction >= 30 && satisfaction <= 70) {
         return `The city of <strong>${city.city}</strong> has adopted some smart mobility strategies, but there’s room for improvement.`;
     } else {
         return `The city of <strong>${city.city}</strong> faces major mobility challenges. Avoid similar pitfalls and focus on proven smart city solutions.`;
     }
 }
+
 
 // Ενημέρωση του HTML με το δυναμικό μήνυμα
 document.getElementById('results').innerHTML = `
