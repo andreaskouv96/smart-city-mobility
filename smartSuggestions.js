@@ -15,9 +15,24 @@ document.getElementById('cityComparisonForm').addEventListener('submit', functio
 
    // Εμφάνιση αποτελέσματος
     const mostSimilar = similarCities[0];
-    document.getElementById('results').innerHTML = `
+function getDynamicMessage(city) {
+    let traffic = city.traffic_congestion_not_a_problem;
+    let satisfaction = city.public_transport_satisfactory;
+    
+    if (traffic < 30 && satisfaction > 70) {
+        return `The city of <strong>${city.city}</strong> is a leader in smart mobility! You can learn from its best practices.`;
+    } else if (traffic >= 30 && traffic <= 60 && satisfaction >= 30 && satisfaction <= 70) {
+        return `The city of <strong>${city.city}</strong> has adopted some smart mobility strategies, but there’s room for improvement.`;
+    } else {
+        return `The city of <strong>${city.city}</strong> faces major mobility challenges. Avoid similar pitfalls and focus on proven smart city solutions.`;
+    }
+}
+
+// Ενημέρωση του HTML με το δυναμικό μήνυμα
+document.getElementById('results').innerHTML = `
     <p>The most similar city is <strong>${mostSimilar.city}</strong>, located in <strong>${mostSimilar.country}</strong> and has SCR <strong>${mostSimilar.smart_city_ranking}</strong>.</p>
-    <p>You can adopt similar strategies to improve mobility!</p>`;
+    <p>${getDynamicMessage(mostSimilar)}</p>`;
+
 
 
 });
